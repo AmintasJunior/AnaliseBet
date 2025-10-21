@@ -579,8 +579,53 @@ def analisar_mercado(partida: Partida, mercado: str, odd: float) -> Analise:
     )
 
 
+def analisar_1x2_v2(partida: Partida) -> Analise1X2:
+    """
+    VERSÃO 2.0: Analisa mercado 1X2 com probabilidades normalizadas
+    """
+    # Calcula probabilidades coerentes
+    analise_data = calcular_scores_independentes(partida)
+    
+    # Calcula EV (Expected Value) para cada mercado
+    prob_casa = analise_data["probabilidade_casa"]
+    prob_empate = analise_data["probabilidade_empate"]
+    prob_fora = analise_data["probabilidade_fora"]
+    
+    ev_casa = calcular_ev(prob_casa, partida.odd_casa)
+    ev_empate = calcular_ev(prob_empate, partida.odd_empate)
+    ev_fora = calcular_ev(prob_fora, partida.odd_fora)
+    
+    # Identifica melhor aposta por EV
+    evs = {"Casa": ev_casa, "Empate": ev_empate, "Fora": ev_fora}
+    melhor_aposta = max(evs, key=evs.get)
+    
+    # Se nenhum EV é positivo, não recomenda
+    if max(ev_casa, ev_empate, ev_fora) <= 0:
+        melhor_aposta = "Nenhuma (sem valor)"
+    
+    # Gera justificativa
+    justificativa = gerar_justificativa_1x2(partida, analise_data)
+    
+    return Analise1X2(
+        probabilidade_casa=prob_casa,
+        probabilidade_empate=prob_empate,
+        probabilidade_fora=prob_fora,
+        resultado_previsto=analise_data["resultado_previsto"],
+        confianca=analise_data["confianca"],
+        diferenca_probabilidade=analise_data["diferenca_probabilidade"],
+        justificativa=justificativa,
+        detalhes_casa=analise_data["detalhes_casa"],
+        detalhes_fora=analise_data["detalhes_fora"],
+        scores_brutos=analise_data["scores_brutos"],
+        ev_casa=ev_casa,
+        ev_empate=ev_empate,
+        ev_fora=ev_fora,
+        melhor_aposta=melhor_aposta
+    )
+
+
 def analisar_partida_completa(partida: Partida) -> AnaliseCompleta:
-    """Analisa todos os mercados e retorna a melhor recomendação"""
+    """Analisa todos os mercados e retorna a melhor recomendação (mantido para compatibilidade)"""
     
     # Define mercados e odds
     mercados = [
@@ -609,6 +654,19 @@ def analisar_partida_completa(partida: Partida) -> AnaliseCompleta:
         partida=partida,
         melhor_recomendacao=melhor,
         todas_analises=analises_ordenadas
+    )
+
+
+def analisar_partida_v2(partida: Partida) -> AnaliseCompletaV2:
+    """
+    VERSÃO 2.0: Análise completa com foco em 1X2 coerente
+    """
+    analise_1x2 = analisar_1x2_v2(partida)
+    
+    return AnaliseCompletaV2(
+        partida=partida,
+        analise_1x2=analise_1x2,
+        outras_analises=None  # Será expandido futuramente
     )
 
 
