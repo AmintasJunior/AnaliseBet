@@ -743,7 +743,7 @@ async def deletar_partida(partida_id: str):
 
 @api_router.get("/partidas/{partida_id}/analise", response_model=AnaliseCompleta)
 async def analisar_partida(partida_id: str):
-    """Gera análise completa de uma partida"""
+    """Gera análise completa de uma partida (versão antiga)"""
     partida_dict = await db.partidas.find_one({"id": partida_id}, {"_id": 0})
     
     if not partida_dict:
@@ -754,6 +754,29 @@ async def analisar_partida(partida_id: str):
     
     partida = Partida(**partida_dict)
     analise = analisar_partida_completa(partida)
+    
+    return analise
+
+
+@api_router.get("/partidas/{partida_id}/analise-v2", response_model=AnaliseCompletaV2)
+async def analisar_partida_v2_endpoint(partida_id: str):
+    """
+    VERSÃO 2.0: Análise com probabilidades normalizadas e coerentes
+    - Probabilidades Casa + Empate + Fora = 100%
+    - Sistema de confiança (Alta/Média/Baixa)
+    - Justificativa automática detalhada
+    - Análise de valor esperado (EV)
+    """
+    partida_dict = await db.partidas.find_one({"id": partida_id}, {"_id": 0})
+    
+    if not partida_dict:
+        raise HTTPException(status_code=404, detail="Partida não encontrada")
+    
+    if isinstance(partida_dict['criado_em'], str):
+        partida_dict['criado_em'] = datetime.fromisoformat(partida_dict['criado_em'])
+    
+    partida = Partida(**partida_dict)
+    analise = analisar_partida_v2(partida)
     
     return analise
 
