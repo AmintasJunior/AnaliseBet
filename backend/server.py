@@ -103,10 +103,36 @@ class Analise(BaseModel):
     detalhes_scores: Dict[str, Any]
 
 
+class Analise1X2(BaseModel):
+    """Modelo para análise 1X2 com probabilidades normalizadas (Versão 2.0)"""
+    probabilidade_casa: float
+    probabilidade_empate: float
+    probabilidade_fora: float
+    resultado_previsto: str
+    confianca: str
+    diferenca_probabilidade: float
+    justificativa: str
+    detalhes_casa: Dict[str, float]
+    detalhes_fora: Dict[str, float]
+    scores_brutos: Dict[str, float]
+    # Análise de valor (EV) para cada mercado
+    ev_casa: float
+    ev_empate: float
+    ev_fora: float
+    melhor_aposta: str
+
+
 class AnaliseCompleta(BaseModel):
     partida: Partida
     melhor_recomendacao: Analise
     todas_analises: List[Analise]
+
+
+class AnaliseCompletaV2(BaseModel):
+    """Versão 2.0 com análise 1X2 coerente"""
+    partida: Partida
+    analise_1x2: Analise1X2
+    outras_analises: Optional[List[Analise]] = None
 
 
 # ================ LÓGICA DE CÁLCULO - VERSÃO 2.0 ================
