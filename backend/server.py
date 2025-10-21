@@ -501,7 +501,7 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     if time_nome:
         justificativa = f"**Previsão: Vitória do {time_nome}**\n"
     else:
-        justificativa = f"**Previsão: Empate**\n"
+        justificativa = "**Previsão: Empate**\n"
     
     justificativa += f"Probabilidade: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n"
     justificativa += f"Confiança: **{confianca}** ({analise_data['diferenca_probabilidade']} pontos de diferença)\n\n"
