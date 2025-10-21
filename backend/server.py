@@ -514,8 +514,6 @@ def calcular_score_total_mercado(partida: Partida, mercado: str) -> Dict[str, An
 
 def gerar_justificativa(partida: Partida, mercado: str, analise_data: Dict) -> str:
     """Gera justificativa textual automática (versão antiga mantida para compatibilidade)"""
-    justificativa = []
-    
     # Fatores positivos
     detalhes = analise_data["detalhes"]
     positivos = []
