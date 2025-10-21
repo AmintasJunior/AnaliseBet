@@ -109,7 +109,8 @@ class AnaliseCompleta(BaseModel):
     todas_analises: List[Analise]
 
 
-# ================ LÓGICA DE CÁLCULO ================
+# ================ LÓGICA DE CÁLCULO - VERSÃO 2.0 ================
+# Sistema de cálculo coerente com probabilidades normalizadas
 
 def calcular_score_forma(forma: str) -> float:
     """Calcula score baseado na forma recente (V-E-D)"""
