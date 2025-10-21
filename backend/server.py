@@ -82,27 +82,56 @@ class Partida(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    
+    # Identificação Geral
     campeonato: str
     rodada: int
+    data_hora: Optional[str] = None
+    local_estadio: Optional[str] = None
+    
+    # Time Casa
     time_casa: str
-    time_visitante: str
     forma_casa: str
-    forma_fora: str
     media_gols_marcados_casa: float
     media_gols_sofridos_casa: float
+    desempenho_especifico_casa: Optional[str] = None
+    lesoes_suspensoes_casa: Optional[str] = None
+    artilheiro_disponivel_casa: bool = True
+    
+    # Time Fora
+    time_visitante: str
+    forma_fora: str
     media_gols_marcados_fora: float
     media_gols_sofridos_fora: float
+    desempenho_especifico_fora: Optional[str] = None
+    lesoes_suspensoes_fora: Optional[str] = None
+    artilheiro_disponivel_fora: bool = True
+    
+    # H2H
     historico_h2h: str
-    artilheiro_disponivel: bool
-    lesoes_suspensoes: str
-    escalacao_definida: bool
+    
+    # Contexto Geral
     arbitro: str
     media_cartoes_arbitro: float
     condicoes_externas: str
-    noticias_relevantes: str
+    
+    # Notícias
+    noticia_1: Optional[str] = None
+    noticia_2: Optional[str] = None
+    noticia_3: Optional[str] = None
+    observacoes_adicionais: Optional[str] = None
+    
+    # Odds
     odd_casa: float
     odd_empate: float
     odd_fora: float
+    
+    # Campos legados (para compatibilidade)
+    artilheiro_disponivel: Optional[bool] = None
+    lesoes_suspensoes: Optional[str] = None
+    escalacao_definida: Optional[bool] = None
+    noticias_relevantes: Optional[str] = None
+    
     criado_em: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
