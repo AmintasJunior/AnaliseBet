@@ -449,47 +449,75 @@ def classificar_ev(ev: float) -> str:
         return "Alto Valor"
 
 
-def gerar_justificativa(partida: Partida, mercado: str, analise_data: Dict) -> str:
-    """Gera justificativa textual automática"""
-    justificativa = []
+def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
+    """
+    VERSÃO 2.0: Gera justificativa automática para previsão 1X2
+    Explica os principais fatores que influenciaram a previsão
+    """
+    resultado = analise_data["resultado_previsto"]
+    confianca = analise_data["confianca"]
+    prob_casa = analise_data["probabilidade_casa"]
+    prob_empate = analise_data["probabilidade_empate"]
+    prob_fora = analise_data["probabilidade_fora"]
     
-    # Fatores positivos
-    detalhes = analise_data["detalhes"]
-    positivos = []
-    negativos = []
-    
-    if detalhes["forma_recente"] >= 7:
-        if "Casa" in mercado:
-            positivos.append(f"✓ {partida.time_casa} em boa forma recente ({partida.forma_casa})")
-        elif "Fora" in mercado:
-            positivos.append(f"✓ {partida.time_visitante} em boa forma fora de casa ({partida.forma_fora})")
-    
-    if detalhes["escalacao_artilheiro"] >= 7:
-        positivos.append("✓ Artilheiro confirmado na escalação")
+    # Seleciona detalhes do time correto
+    if resultado == "Casa":
+        detalhes = analise_data["detalhes_casa"]
+        time_nome = partida.time_casa
+    elif resultado == "Fora":
+        detalhes = analise_data["detalhes_fora"]
+        time_nome = partida.time_visitante
     else:
-        negativos.append("⚠ Artilheiro indisponível")
+        detalhes = analise_data["detalhes_casa"]  # Para empate, usa média
+        time_nome = None
     
-    if detalhes["lesoes_suspensoes"] >= 7:
-        positivos.append("✓ Elenco praticamente completo")
+    # Cabeçalho da justificativa
+    if time_nome:
+        justificativa = f"**Previsão: Vitória do {time_nome}**\n"
     else:
-        negativos.append(f"⚠ Desfalques importantes: {partida.lesoes_suspensoes}")
+        justificativa = f"**Previsão: Empate**\n"
     
-    if detalhes["condicoes_externas"] >= 7:
-        positivos.append(f"✓ Boas condições externas: {partida.condicoes_externas}")
-    elif detalhes["condicoes_externas"] < 5:
-        negativos.append(f"⚠ Condições adversas: {partida.condicoes_externas}")
+    justificativa += f"Probabilidade: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n"
+    justificativa += f"Confiança: **{confianca}** ({analise_data['diferenca_probabilidade']} pontos de diferença)\n\n"
+    
+    # Identifica os 3 fatores mais relevantes
+    fatores_ordenados = sorted(detalhes.items(), key=lambda x: x[1], reverse=True)[:3]
+    
+    justificativa += "**Principais fatores:**\n"
+    
+    for i, (fator, valor) in enumerate(fatores_ordenados, 1):
+        emoji = "🟢" if valor >= 7 else "🟡" if valor >= 5 else "🔴"
+        fator_nome = fator.replace("_", " ").title()
+        justificativa += f"{i}. {emoji} {fator_nome}: {valor}/10\n"
+    
+    # Adiciona observações específicas
+    justificativa += "\n**Observações:**\n"
+    
+    if resultado == "Casa":
+        if detalhes["forma_recente"] >= 7:
+            justificativa += f"✓ {partida.time_casa} em excelente forma recente ({partida.forma_casa})\n"
+        if detalhes["desempenho_casa_fora"] >= 7:
+            justificativa += f"✓ Forte desempenho jogando em casa (média {partida.media_gols_marcados_casa:.1f} gols)\n"
+    elif resultado == "Fora":
+        if detalhes["forma_recente"] >= 7:
+            justificativa += f"✓ {partida.time_visitante} em excelente forma recente ({partida.forma_fora})\n"
+        if detalhes["desempenho_casa_fora"] >= 7:
+            justificativa += f"✓ Forte desempenho jogando fora (média {partida.media_gols_marcados_fora:.1f} gols)\n"
+    else:
+        justificativa += "✓ Times equilibrados em múltiplos fatores\n"
+        justificativa += f"✓ Histórico sugere equilíbrio: {partida.historico_h2h}\n"
+    
+    # Adiciona alertas
+    if not partida.artilheiro_disponivel:
+        justificativa += "⚠ Artilheiro indisponível pode impactar o ataque\n"
+    
+    if partida.lesoes_suspensoes and partida.lesoes_suspensoes.lower() not in ["nenhuma", "sem desfalques", "-"]:
+        justificativa += f"⚠ Atenção aos desfalques: {partida.lesoes_suspensoes}\n"
     
     if partida.noticias_relevantes:
-        if detalhes["motivacao"] >= 6:
-            positivos.append(f"✓ Contexto favorável: {partida.noticias_relevantes}")
-        else:
-            negativos.append(f"⚠ Contexto desfavorável: {partida.noticias_relevantes}")
+        justificativa += f"ℹ️ Contexto: {partida.noticias_relevantes}\n"
     
-    justificativa_texto = "\n".join(positivos)
-    if negativos:
-        justificativa_texto += "\n\n" + "\n".join(negativos)
-    
-    return justificativa_texto
+    return justificativa
 
 
 def analisar_mercado(partida: Partida, mercado: str, odd: float) -> Analise:
