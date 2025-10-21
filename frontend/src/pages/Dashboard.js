@@ -54,7 +54,10 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 ⚽ Análise Inteligente de Apostas
               </h1>
-              <p className="text-gray-600 mt-1">Sistema de recomendação baseado em dados</p>
+              <p className="text-gray-600 mt-1">
+                Sistema de recomendação baseado em dados • 
+                <span className="ml-2 text-emerald-600 font-semibold">Versão 2.0 com Probabilidades Coerentes</span>
+              </p>
             </div>
             <Button
               onClick={() => navigate("/nova-partida")}
