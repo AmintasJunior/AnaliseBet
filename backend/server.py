@@ -441,6 +441,120 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     }
 
 
+def calcular_score_total_mercado(partida: Partida, mercado: str) -> Dict[str, Any]:
+    """
+    Mantido para compatibilidade com versão antiga
+    Calcula o score total ponderado para um mercado específico
+    """
+    # Scores base (0-10)
+    score_forma_casa = calcular_score_forma(partida.forma_casa)
+    score_forma_fora = calcular_score_forma(partida.forma_fora)
+    score_h2h_casa = calcular_score_h2h(partida.historico_h2h, "casa")
+    score_artilheiro = calcular_score_artilheiro(partida.artilheiro_disponivel)
+    score_lesoes = calcular_score_lesoes(partida.lesoes_suspensoes)
+    score_arbitro = calcular_score_arbitro(partida.media_cartoes_arbitro)
+    score_motivacao = calcular_score_motivacao(partida.noticias_relevantes)
+    score_condicoes = calcular_score_condicoes(partida.condicoes_externas)
+    score_xg_casa = calcular_score_xg(partida.media_gols_marcados_casa, partida.media_gols_sofridos_casa)
+    score_xg_fora = calcular_score_xg(partida.media_gols_marcados_fora, partida.media_gols_sofridos_fora)
+    
+    # Ajusta scores conforme o mercado
+    if mercado == "Casa":
+        score_forma = score_forma_casa
+        score_h2h = score_h2h_casa
+        score_xg = score_xg_casa
+    elif mercado == "Fora":
+        score_forma = score_forma_fora
+        score_h2h = 10 - score_h2h_casa
+        score_xg = score_xg_fora
+    elif mercado == "Empate":
+        score_forma = (score_forma_casa + score_forma_fora) / 2
+        score_h2h = 5.0
+        score_xg = 5.0
+    else:
+        score_forma = (score_forma_casa + score_forma_fora) / 2
+        score_h2h = 5.0
+        score_xg = (score_xg_casa + score_xg_fora) / 2
+    
+    # Pesos
+    pesos = {
+        "forma_recente": 0.25,
+        "historico_h2h": 0.15,
+        "escalacao_artilheiro": 0.15,
+        "lesoes_suspensoes": 0.15,
+        "motivacao": 0.10,
+        "arbitro": 0.10,
+        "condicoes_externas": 0.10,
+    }
+    
+    # Calcula score total ponderado (0-100)
+    score_total = (
+        score_forma * pesos["forma_recente"] * 10 +
+        score_h2h * pesos["historico_h2h"] * 10 +
+        score_artilheiro * pesos["escalacao_artilheiro"] * 10 +
+        score_lesoes * pesos["lesoes_suspensoes"] * 10 +
+        score_motivacao * pesos["motivacao"] * 10 +
+        score_arbitro * pesos["arbitro"] * 10 +
+        score_condicoes * pesos["condicoes_externas"] * 10
+    )
+    
+    detalhes = {
+        "forma_recente": score_forma,
+        "historico_h2h": score_h2h,
+        "escalacao_artilheiro": score_artilheiro,
+        "lesoes_suspensoes": score_lesoes,
+        "arbitro": score_arbitro,
+        "motivacao": score_motivacao,
+        "condicoes_externas": score_condicoes,
+        "xg_xga": score_xg
+    }
+    
+    return {"score_total": round(score_total, 2), "detalhes": detalhes}
+
+
+def gerar_justificativa(partida: Partida, mercado: str, analise_data: Dict) -> str:
+    """Gera justificativa textual automática (versão antiga mantida para compatibilidade)"""
+    justificativa = []
+    
+    # Fatores positivos
+    detalhes = analise_data["detalhes"]
+    positivos = []
+    negativos = []
+    
+    if detalhes["forma_recente"] >= 7:
+        if "Casa" in mercado:
+            positivos.append(f"✓ {partida.time_casa} em boa forma recente ({partida.forma_casa})")
+        elif "Fora" in mercado:
+            positivos.append(f"✓ {partida.time_visitante} em boa forma fora de casa ({partida.forma_fora})")
+    
+    if detalhes["escalacao_artilheiro"] >= 7:
+        positivos.append("✓ Artilheiro confirmado na escalação")
+    else:
+        negativos.append("⚠ Artilheiro indisponível")
+    
+    if detalhes["lesoes_suspensoes"] >= 7:
+        positivos.append("✓ Elenco praticamente completo")
+    else:
+        negativos.append(f"⚠ Desfalques importantes: {partida.lesoes_suspensoes}")
+    
+    if detalhes["condicoes_externas"] >= 7:
+        positivos.append(f"✓ Boas condições externas: {partida.condicoes_externas}")
+    elif detalhes["condicoes_externas"] < 5:
+        negativos.append(f"⚠ Condições adversas: {partida.condicoes_externas}")
+    
+    if partida.noticias_relevantes:
+        if detalhes["motivacao"] >= 6:
+            positivos.append(f"✓ Contexto favorável: {partida.noticias_relevantes}")
+        else:
+            negativos.append(f"⚠ Contexto desfavorável: {partida.noticias_relevantes}")
+    
+    justificativa_texto = "\n".join(positivos)
+    if negativos:
+        justificativa_texto += "\n\n" + "\n".join(negativos)
+    
+    return justificativa_texto
+
+
 def calcular_probabilidade(score_total: float) -> float:
     """Converte score em probabilidade usando função sigmoid"""
     prob = 100 / (1 + math.exp(-(score_total - 50) / 10))
