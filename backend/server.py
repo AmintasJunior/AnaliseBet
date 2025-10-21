@@ -255,106 +255,164 @@ def calcular_score_odds_implicitas(odd: float, odd_referencia: float) -> float:
         return 4.0
 
 
-def calcular_score_total_mercado(partida: Partida, mercado: str) -> Dict[str, Any]:
-    """Calcula o score total ponderado para um mercado específico"""
+def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
+    """
+    VERSÃO 2.0: Calcula scores independentes para Casa, Empate e Fora
+    Usa os 7 fatores com pesos ajustados que somam 100%
+    """
     
-    # Scores base (0-10)
+    # ====== CÁLCULO DOS SCORES BASE (0-10) ======
+    
+    # 1. Forma recente (25%)
     score_forma_casa = calcular_score_forma(partida.forma_casa)
     score_forma_fora = calcular_score_forma(partida.forma_fora)
-    score_h2h_casa = calcular_score_h2h(partida.historico_h2h, "casa")
+    
+    # 2. Força do elenco (15%) - combinação de artilheiro + lesões
     score_artilheiro = calcular_score_artilheiro(partida.artilheiro_disponivel)
     score_lesoes = calcular_score_lesoes(partida.lesoes_suspensoes)
-    score_arbitro = calcular_score_arbitro(partida.media_cartoes_arbitro)
+    score_forca_elenco = (score_artilheiro + score_lesoes) / 2
+    
+    # 3. Desempenho casa/fora (15%) - baseado em média de gols
+    score_desempenho_casa = calcular_score_xg(partida.media_gols_marcados_casa, partida.media_gols_sofridos_casa)
+    score_desempenho_fora = calcular_score_xg(partida.media_gols_marcados_fora, partida.media_gols_sofridos_fora)
+    
+    # 4. Histórico H2H (15%)
+    score_h2h_casa = calcular_score_h2h(partida.historico_h2h, "casa")
+    score_h2h_fora = 10 - score_h2h_casa
+    
+    # 5. Motivação/contexto (10%)
     score_motivacao = calcular_score_motivacao(partida.noticias_relevantes)
-    score_condicoes = calcular_score_condicoes(partida.condicoes_externas)
-    score_xg_casa = calcular_score_xg(partida.media_gols_marcados_casa, partida.media_gols_sofridos_casa)
-    score_xg_fora = calcular_score_xg(partida.media_gols_marcados_fora, partida.media_gols_sofridos_fora)
     
-    # Ajusta scores conforme o mercado
-    if mercado == "Casa":
-        score_forma = score_forma_casa
-        score_h2h = score_h2h_casa
-        score_xg = score_xg_casa
-        odd_ref = partida.odd_casa
-    elif mercado == "Fora":
-        score_forma = score_forma_fora
-        score_h2h = 10 - score_h2h_casa
-        score_xg = score_xg_fora
-        odd_ref = partida.odd_fora
-    elif mercado == "Empate":
-        score_forma = (score_forma_casa + score_forma_fora) / 2
-        score_h2h = 5.0
-        score_xg = 5.0
-        odd_ref = partida.odd_empate
-    elif mercado in ["Casa ou Empate", "Fora ou Empate", "Casa ou Fora"]:
-        score_forma = max(score_forma_casa, score_forma_fora)
-        score_h2h = 6.0
-        score_xg = (score_xg_casa + score_xg_fora) / 2
-        odd_ref = 1.5  # Estimativa
-    elif mercado == "Ambos Marcam":
-        # Para ambos marcarem, queremos ataque forte dos dois lados
-        score_forma = (score_forma_casa + score_forma_fora) / 2
-        score_h2h = 6.0
-        score_xg = min(partida.media_gols_marcados_casa, partida.media_gols_marcados_fora) * 3
-        score_xg = min(10, score_xg)
-        odd_ref = 2.0
-    elif "Acima" in mercado or "Abaixo" in mercado:
-        # Para gols, considera o ataque e defesa de ambos
-        media_total = partida.media_gols_marcados_casa + partida.media_gols_marcados_fora
-        score_forma = (score_forma_casa + score_forma_fora) / 2
-        score_h2h = 5.0
-        score_xg = min(10, media_total * 2)
-        odd_ref = 1.8
-    else:
-        score_forma = (score_forma_casa + score_forma_fora) / 2
-        score_h2h = 5.0
-        score_xg = (score_xg_casa + score_xg_fora) / 2
-        odd_ref = 2.0
+    # 6. Notas do analista (10%) - baseado em múltiplos fatores
+    score_arbitro = calcular_score_arbitro(partida.media_cartoes_arbitro)
     
-    score_odds = calcular_score_odds_implicitas(odd_ref, 2.0)
+    # 7. Notícias/contexto externo (10%)
+    score_contexto = calcular_score_condicoes(partida.condicoes_externas)
     
-    # Pesos conforme tabela
-    pesos = {
-        "forma_recente": 0.20,
-        "historico_h2h": 0.10,
-        "escalacao_artilheiro": 0.15,
-        "lesoes_suspensoes": 0.10,
-        "arbitro": 0.05,
-        "motivacao": 0.05,
-        "condicoes_externas": 0.05,
-        "noticias": 0.10,
-        "odds_implicitas": 0.10,
-        "xg_xga": 0.10
-    }
+    # ====== PESOS VERSÃO 2.0 (somam 100%) ======
+    PESO_FORMA = 0.25
+    PESO_FORCA_ELENCO = 0.15
+    PESO_DESEMPENHO = 0.15
+    PESO_H2H = 0.15
+    PESO_MOTIVACAO = 0.10
+    PESO_ANALISTA = 0.10
+    PESO_CONTEXTO = 0.10
     
-    # Calcula score total ponderado (0-100)
-    score_total = (
-        score_forma * pesos["forma_recente"] * 10 +
-        score_h2h * pesos["historico_h2h"] * 10 +
-        score_artilheiro * pesos["escalacao_artilheiro"] * 10 +
-        score_lesoes * pesos["lesoes_suspensoes"] * 10 +
-        score_arbitro * pesos["arbitro"] * 10 +
-        score_motivacao * pesos["motivacao"] * 10 +
-        score_condicoes * pesos["condicoes_externas"] * 10 +
-        score_motivacao * pesos["noticias"] * 10 +
-        score_odds * pesos["odds_implicitas"] * 10 +
-        score_xg * pesos["xg_xga"] * 10
+    # ====== CÁLCULO SCORE CASA (0-100) ======
+    score_casa = (
+        score_forma_casa * PESO_FORMA * 10 +
+        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_desempenho_casa * PESO_DESEMPENHO * 10 +
+        score_h2h_casa * PESO_H2H * 10 +
+        score_motivacao * PESO_MOTIVACAO * 10 +
+        score_arbitro * PESO_ANALISTA * 10 +
+        score_contexto * PESO_CONTEXTO * 10
     )
     
-    detalhes = {
-        "forma_recente": score_forma,
-        "historico_h2h": score_h2h,
-        "escalacao_artilheiro": score_artilheiro,
-        "lesoes_suspensoes": score_lesoes,
-        "arbitro": score_arbitro,
-        "motivacao": score_motivacao,
-        "condicoes_externas": score_condicoes,
-        "noticias": score_motivacao,
-        "odds_implicitas": score_odds,
-        "xg_xga": score_xg
+    # ====== CÁLCULO SCORE FORA (0-100) ======
+    score_fora = (
+        score_forma_fora * PESO_FORMA * 10 +
+        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_desempenho_fora * PESO_DESEMPENHO * 10 +
+        score_h2h_fora * PESO_H2H * 10 +
+        score_motivacao * PESO_MOTIVACAO * 10 +
+        score_arbitro * PESO_ANALISTA * 10 +
+        score_contexto * PESO_CONTEXTO * 10
+    )
+    
+    # ====== CÁLCULO SCORE EMPATE (0-100) ======
+    # Empate favorecido quando times estão equilibrados
+    diferenca_forma = abs(score_forma_casa - score_forma_fora)
+    diferenca_desempenho = abs(score_desempenho_casa - score_desempenho_fora)
+    
+    # Quanto menor a diferença, maior o score do empate
+    score_forma_empate = 10 - diferenca_forma
+    score_desempenho_empate = 10 - diferenca_desempenho
+    score_h2h_empate = 5.0  # Neutro
+    
+    score_empate = (
+        score_forma_empate * PESO_FORMA * 10 +
+        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_desempenho_empate * PESO_DESEMPENHO * 10 +
+        score_h2h_empate * PESO_H2H * 10 +
+        score_motivacao * PESO_MOTIVACAO * 10 +
+        score_arbitro * PESO_ANALISTA * 10 +
+        score_contexto * PESO_CONTEXTO * 10
+    )
+    
+    # ====== NORMALIZAÇÃO PARA SOMAR 100% ======
+    total_scores = score_casa + score_empate + score_fora
+    
+    if total_scores > 0:
+        prob_casa = (score_casa / total_scores) * 100
+        prob_empate = (score_empate / total_scores) * 100
+        prob_fora = (score_fora / total_scores) * 100
+    else:
+        # Fallback para caso extremo
+        prob_casa = prob_empate = prob_fora = 33.33
+    
+    # Arredonda e garante soma exata de 100%
+    prob_casa = round(prob_casa, 2)
+    prob_empate = round(prob_empate, 2)
+    prob_fora = round(100 - prob_casa - prob_empate, 2)
+    
+    # ====== CÁLCULO DA CONFIANÇA ======
+    probabilidades = [prob_casa, prob_empate, prob_fora]
+    prob_max = max(probabilidades)
+    prob_segunda = sorted(probabilidades, reverse=True)[1]
+    diferenca = prob_max - prob_segunda
+    
+    if diferenca > 20:
+        confianca = "Alta"
+    elif diferenca >= 10:
+        confianca = "Média"
+    else:
+        confianca = "Baixa"
+    
+    # ====== IDENTIFICAR RESULTADO PREVISTO ======
+    if prob_casa > prob_empate and prob_casa > prob_fora:
+        resultado_previsto = "Casa"
+    elif prob_fora > prob_casa and prob_fora > prob_empate:
+        resultado_previsto = "Fora"
+    else:
+        resultado_previsto = "Empate"
+    
+    # ====== DETALHES DOS FATORES ======
+    detalhes_casa = {
+        "forma_recente": round(score_forma_casa, 2),
+        "forca_elenco": round(score_forca_elenco, 2),
+        "desempenho_casa_fora": round(score_desempenho_casa, 2),
+        "historico_h2h": round(score_h2h_casa, 2),
+        "motivacao_contexto": round(score_motivacao, 2),
+        "notas_analista": round(score_arbitro, 2),
+        "contexto_externo": round(score_contexto, 2)
     }
     
-    return {"score_total": round(score_total, 2), "detalhes": detalhes}
+    detalhes_fora = {
+        "forma_recente": round(score_forma_fora, 2),
+        "forca_elenco": round(score_forca_elenco, 2),
+        "desempenho_casa_fora": round(score_desempenho_fora, 2),
+        "historico_h2h": round(score_h2h_fora, 2),
+        "motivacao_contexto": round(score_motivacao, 2),
+        "notas_analista": round(score_arbitro, 2),
+        "contexto_externo": round(score_contexto, 2)
+    }
+    
+    return {
+        "probabilidade_casa": prob_casa,
+        "probabilidade_empate": prob_empate,
+        "probabilidade_fora": prob_fora,
+        "resultado_previsto": resultado_previsto,
+        "confianca": confianca,
+        "diferenca_probabilidade": round(diferenca, 2),
+        "detalhes_casa": detalhes_casa,
+        "detalhes_fora": detalhes_fora,
+        "scores_brutos": {
+            "casa": round(score_casa, 2),
+            "empate": round(score_empate, 2),
+            "fora": round(score_fora, 2)
+        }
+    }
 
 
 def calcular_probabilidade(score_total: float) -> float:
