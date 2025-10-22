@@ -453,13 +453,46 @@ def gerar_observacoes_contextuais(partida: Partida, analise_data: Dict) -> List[
             "impacto": -2
         })
     
-    # 10. Adicionar observações manuais do usuário (se existirem)
+    # 10. Notícias com impacto numérico (inseridas manualmente)
+    if partida.noticia_1 and partida.noticia_1.strip():
+        impacto = partida.noticia_1_impacto if partida.noticia_1_impacto else 0
+        observacoes.append({
+            "texto": f"🗞️ {partida.noticia_1}",
+            "impacto": impacto
+        })
+    
+    if partida.noticia_2 and partida.noticia_2.strip():
+        impacto = partida.noticia_2_impacto if partida.noticia_2_impacto else 0
+        observacoes.append({
+            "texto": f"🗞️ {partida.noticia_2}",
+            "impacto": impacto
+        })
+    
+    if partida.noticia_3 and partida.noticia_3.strip():
+        impacto = partida.noticia_3_impacto if partida.noticia_3_impacto else 0
+        observacoes.append({
+            "texto": f"🗞️ {partida.noticia_3}",
+            "impacto": impacto
+        })
+    
+    # 11. Adicionar observações contextuais manuais do usuário (se existirem)
     if partida.observacoes_contextuais:
         for obs in partida.observacoes_contextuais:
-            observacoes.append({
-                "texto": f"ℹ️ {obs}",
-                "impacto": 0  # Observações manuais têm impacto neutro por padrão
-            })
+            # Se for dict com texto e impacto
+            if isinstance(obs, dict):
+                texto = obs.get("texto", "")
+                impacto = obs.get("impacto", 0)
+                if texto.strip():
+                    observacoes.append({
+                        "texto": f"ℹ️ {texto}",
+                        "impacto": impacto
+                    })
+            # Se for string (compatibilidade com versão antiga)
+            elif isinstance(obs, str) and obs.strip():
+                observacoes.append({
+                    "texto": f"ℹ️ {obs}",
+                    "impacto": 0
+                })
     
     return observacoes
 
