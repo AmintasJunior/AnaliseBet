@@ -347,7 +347,7 @@ const DetalhesPartidaV2 = () => {
               </div>
 
               {/* Justificativa */}
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-5 border-2 border-blue-200">
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-5 border-2 border-blue-200 mb-3">
                 <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-blue-600" />
                   Justificativa da Análise
@@ -355,6 +355,56 @@ const DetalhesPartidaV2 = () => {
                 <div className="text-sm text-gray-800 whitespace-pre-line leading-relaxed">
                   {analise_1x2.justificativa}
                 </div>
+              </div>
+
+              {/* Síntese Final */}
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-5 border-2 border-emerald-300">
+                <h4 className="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                  🔎 Síntese
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="font-semibold text-gray-700 min-w-[140px]">Aposta estatística:</span>
+                    <span className={`font-bold ${getResultadoCor(analise_1x2.resultado_previsto)}`}>
+                      {analise_1x2.resultado_previsto === "Casa" ? `Vitória de ${partida.time_casa}` :
+                       analise_1x2.resultado_previsto === "Fora" ? `Vitória de ${partida.time_visitante}` :
+                       analise_1x2.resultado_previsto === "Empate" ? "Empate" : "Sem recomendação"}
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="font-semibold text-gray-700 min-w-[140px]">Confiança:</span>
+                    <span className={`font-bold ${
+                      analise_1x2.confianca === "Alta" ? "text-emerald-700" :
+                      analise_1x2.confianca === "Média" ? "text-yellow-700" :
+                      analise_1x2.confianca === "Baixa" ? "text-orange-700" :
+                      "text-red-700"
+                    }`}>
+                      {analise_1x2.confianca} ({analise_1x2.diferenca_probabilidade.toFixed(2)}%)
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="font-semibold text-gray-700 min-w-[140px]">Sobre o EV:</span>
+                    <span className="text-gray-600">
+                      {(() => {
+                        const valoresPositivos = [];
+                        if (analise_1x2.ev_casa > 0) valoresPositivos.push("Casa");
+                        if (analise_1x2.ev_empate > 0) valoresPositivos.push("Empate");
+                        if (analise_1x2.ev_fora > 0) valoresPositivos.push("Fora");
+                        
+                        if (valoresPositivos.length > 0) {
+                          return `EV indica valor em ${valoresPositivos.join(", ")} (não usado na decisão estatística)`;
+                        } else {
+                          return "Nenhum valor detectado no EV";
+                        }
+                      })()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rodapé */}
+              <div className="text-center text-xs text-gray-500 mt-4 italic">
+                Análise automatizada baseada em fatores estatísticos ponderados.
               </div>
             </CardContent>
           </Card>
