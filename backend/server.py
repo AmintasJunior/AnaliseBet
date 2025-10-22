@@ -1131,21 +1131,7 @@ async def deletar_partida(partida_id: str):
     return {"message": "Partida deletada com sucesso"}
 
 
-@api_router.get("/partidas/{partida_id}/analise", response_model=AnaliseCompleta)
-async def analisar_partida(partida_id: str):
-    """Gera análise completa de uma partida (versão antiga)"""
-    partida_dict = await db.partidas.find_one({"id": partida_id}, {"_id": 0})
-    
-    if not partida_dict:
-        raise HTTPException(status_code=404, detail="Partida não encontrada")
-    
-    if isinstance(partida_dict['criado_em'], str):
-        partida_dict['criado_em'] = datetime.fromisoformat(partida_dict['criado_em'])
-    
-    partida = Partida(**partida_dict)
-    analise = analisar_partida_completa(partida)
-    
-    return analise
+# Endpoint antigo removido - usar /analise-v2
 
 
 @api_router.get("/partidas/{partida_id}/analise-v2", response_model=AnaliseCompletaV2)
