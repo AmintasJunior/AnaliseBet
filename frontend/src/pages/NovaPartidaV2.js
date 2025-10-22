@@ -32,10 +32,13 @@ const NovaPartidaV2 = () => {
     odd_empate: "",
     odd_fora: "",
     noticia_1: "",
+    noticia_1_impacto: 0,
     noticia_2: "",
+    noticia_2_impacto: 0,
     noticia_3: "",
+    noticia_3_impacto: 0,
     observacoes_adicionais: "",
-    observacoes_contextuais: "",
+    observacoes_contextuais: [],
     
     // Casa
     time_casa: "",
