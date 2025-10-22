@@ -247,7 +247,7 @@ const DetalhesPartidaV2 = () => {
                       🏠 Vitória {partida.time_casa}
                     </span>
                     <span className="text-lg font-bold text-blue-700">
-                      {analise_1x2.probabilidade_casa}%
+                      {analise_1x2.probabilidade_casa.toFixed(2)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
@@ -257,7 +257,7 @@ const DetalhesPartidaV2 = () => {
                     >
                       {analise_1x2.probabilidade_casa > 15 && (
                         <span className="text-white text-xs font-bold">
-                          {analise_1x2.probabilidade_casa}%
+                          {analise_1x2.probabilidade_casa.toFixed(2)}%
                         </span>
                       )}
                     </div>
@@ -271,7 +271,7 @@ const DetalhesPartidaV2 = () => {
                       🤝 Empate
                     </span>
                     <span className="text-lg font-bold text-gray-700">
-                      {analise_1x2.probabilidade_empate}%
+                      {analise_1x2.probabilidade_empate.toFixed(2)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
@@ -281,7 +281,7 @@ const DetalhesPartidaV2 = () => {
                     >
                       {analise_1x2.probabilidade_empate > 15 && (
                         <span className="text-white text-xs font-bold">
-                          {analise_1x2.probabilidade_empate}%
+                          {analise_1x2.probabilidade_empate.toFixed(2)}%
                         </span>
                       )}
                     </div>
@@ -295,7 +295,7 @@ const DetalhesPartidaV2 = () => {
                       ✈️ Vitória {partida.time_visitante}
                     </span>
                     <span className="text-lg font-bold text-purple-700">
-                      {analise_1x2.probabilidade_fora}%
+                      {analise_1x2.probabilidade_fora.toFixed(2)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-8 overflow-hidden">
@@ -305,7 +305,7 @@ const DetalhesPartidaV2 = () => {
                     >
                       {analise_1x2.probabilidade_fora > 15 && (
                         <span className="text-white text-xs font-bold">
-                          {analise_1x2.probabilidade_fora}%
+                          {analise_1x2.probabilidade_fora.toFixed(2)}%
                         </span>
                       )}
                     </div>
