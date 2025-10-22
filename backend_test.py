@@ -16,7 +16,7 @@ import sys
 from typing import Dict, Any
 
 # Configuração da URL base
-BASE_URL = "https://smartbet-analysis.preview.emergentagent.com/api"
+BASE_URL = "https://bet-stats.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
