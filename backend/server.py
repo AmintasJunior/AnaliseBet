@@ -984,16 +984,15 @@ def analisar_1x2_v2(partida: Partida) -> Analise1X2:
     ev_empate = calcular_ev(prob_empate, partida.odd_empate)
     ev_fora = calcular_ev(prob_fora, partida.odd_fora)
     
-    # Identifica melhor aposta por EV
-    evs = {"Casa": ev_casa, "Empate": ev_empate, "Fora": ev_fora}
-    melhor_aposta = max(evs, key=evs.get)
-    
-    # Se nenhum EV é positivo, não recomenda
-    if max(ev_casa, ev_empate, ev_fora) <= 0:
-        melhor_aposta = "Nenhuma (sem valor)"
-    
     # Gera justificativa
     justificativa = gerar_justificativa_1x2(partida, analise_data)
+    
+    # Gera observações contextuais automáticas
+    observacoes = gerar_observacoes_contextuais(partida, analise_data)
+    observacoes_formatadas = [
+        ObservacaoContextual(texto=obs["texto"], impacto=obs["impacto"])
+        for obs in observacoes
+    ]
     
     return Analise1X2(
         probabilidade_casa=prob_casa,
@@ -1005,11 +1004,13 @@ def analisar_1x2_v2(partida: Partida) -> Analise1X2:
         justificativa=justificativa,
         detalhes_casa=analise_data["detalhes_casa"],
         detalhes_fora=analise_data["detalhes_fora"],
+        detalhes_casa_ponderados=analise_data["detalhes_casa_ponderados"],
+        detalhes_fora_ponderados=analise_data["detalhes_fora_ponderados"],
         scores_brutos=analise_data["scores_brutos"],
         ev_casa=ev_casa,
         ev_empate=ev_empate,
         ev_fora=ev_fora,
-        melhor_aposta=melhor_aposta
+        observacoes_contextuais=observacoes_formatadas
     )
 
 
