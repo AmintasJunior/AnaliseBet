@@ -432,36 +432,55 @@ const DetalhesPartidaV2 = () => {
 
               <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle className="text-purple-700">Detalhes dos Fatores (Time Visitante)</CardTitle>
-                  <CardDescription>Scores individuais (0-10) que influenciaram a previsão</CardDescription>
+                  <CardTitle className="text-purple-700">✈️ Detalhes dos Fatores (Time Visitante)</CardTitle>
+                  <CardDescription>Scores, pesos e valores ponderados que influenciaram a previsão</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {Object.entries(analise_1x2.detalhes_fora).map(([fator, score]) => {
-                      const percentage = (score / 10) * 100;
-                      let cor = "bg-red-500";
-                      if (score >= 7) cor = "bg-purple-500";
-                      else if (score >= 5) cor = "bg-yellow-500";
-                      
-                      return (
-                        <div key={fator} className="flex items-center gap-4">
-                          <div className="flex-1">
-                            <div className="flex justify-between mb-1">
-                              <span className="text-sm font-medium text-gray-700 capitalize">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b-2 border-purple-200">
+                          <th className="text-left py-2 px-2 font-semibold text-gray-700">Fator</th>
+                          <th className="text-center py-2 px-2 font-semibold text-gray-700">Nota</th>
+                          <th className="text-center py-2 px-2 font-semibold text-gray-700">Peso</th>
+                          <th className="text-center py-2 px-2 font-semibold text-gray-700">Valor Ponderado</th>
+                          <th className="text-left py-2 px-2 font-semibold text-gray-700">Visual</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(analise_1x2.detalhes_fora_ponderados).map(([fator, dados]) => {
+                          const percentage = (dados.nota / 10) * 100;
+                          let cor = "bg-red-500";
+                          if (dados.nota >= 7) cor = "bg-purple-500";
+                          else if (dados.nota >= 5) cor = "bg-yellow-500";
+                          
+                          return (
+                            <tr key={fator} className="border-b border-gray-100 hover:bg-gray-50">
+                              <td className="py-3 px-2 capitalize text-gray-700">
                                 {fator.replace(/_/g, " ")}
-                              </span>
-                              <span className="text-sm font-bold text-gray-900">{score}/10</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-3">
-                              <div
-                                className={`${cor} h-3 rounded-full transition-all`}
-                                style={{ width: `${percentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                              </td>
+                              <td className="py-3 px-2 text-center font-bold text-gray-900">
+                                {dados.nota}/10
+                              </td>
+                              <td className="py-3 px-2 text-center text-purple-700 font-semibold">
+                                {dados.peso}%
+                              </td>
+                              <td className="py-3 px-2 text-center font-bold text-blue-700">
+                                {dados.ponderado}
+                              </td>
+                              <td className="py-3 px-2">
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className={`${cor} h-2 rounded-full transition-all`}
+                                    style={{ width: `${percentage}%` }}
+                                  ></div>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </CardContent>
               </Card>
