@@ -35,6 +35,7 @@ const NovaPartidaV2 = () => {
     noticia_2: "",
     noticia_3: "",
     observacoes_adicionais: "",
+    observacoes_contextuais: "",
     
     // Casa
     time_casa: "",
