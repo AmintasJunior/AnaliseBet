@@ -55,8 +55,8 @@ const Dashboard = () => {
                 ⚽ Análise Inteligente de Apostas
               </h1>
               <p className="text-gray-600 mt-1">
-                Sistema de recomendação baseado em dados • 
-                <span className="ml-2 text-emerald-600 font-semibold">Versão 2.0 com Probabilidades Coerentes</span>
+                Sistema de recomendação baseado em dados e análise inteligente • 
+                <span className="ml-2 text-emerald-600 font-semibold">Análise 2.0</span>
               </p>
             </div>
             <Button
