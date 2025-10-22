@@ -421,9 +421,12 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     score_desempenho_empate = 10 - diferenca_desempenho
     score_h2h_empate = 5.0  # Neutro
     
+    # Média da força do elenco para empate
+    score_forca_elenco_empate = (score_forca_elenco_casa + score_forca_elenco_fora) / 2
+    
     score_empate = (
         score_forma_empate * PESO_FORMA * 10 +
-        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_forca_elenco_empate * PESO_FORCA_ELENCO * 10 +
         score_desempenho_empate * PESO_DESEMPENHO * 10 +
         score_h2h_empate * PESO_H2H * 10 +
         score_motivacao * PESO_MOTIVACAO * 10 +
