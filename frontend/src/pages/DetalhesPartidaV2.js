@@ -185,7 +185,7 @@ const DetalhesPartidaV2 = () => {
                     </Badge>
                   </div>
                   <div className="text-xs text-gray-600 mt-2">
-                    Diferença entre 1º e 2º: {analise_1x2.diferenca_probabilidade}%
+                    Diferença entre 1º e 2º: {analise_1x2.diferenca_probabilidade.toFixed(2)}%
                   </div>
                 </div>
                 
