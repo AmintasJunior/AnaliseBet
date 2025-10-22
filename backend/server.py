@@ -340,6 +340,124 @@ def calcular_score_odds_implicitas(odd: float, odd_referencia: float) -> float:
         return 4.0
 
 
+def gerar_observacoes_contextuais(partida: Partida, analise_data: Dict) -> List[Dict[str, Any]]:
+    """
+    Gera observações contextuais automáticas com impacto numérico (-10 a +10)
+    """
+    observacoes = []
+    
+    # Observações do time casa
+    detalhes_casa = analise_data["detalhes_casa"]
+    detalhes_fora = analise_data["detalhes_fora"]
+    
+    # 1. Forma recente - Casa
+    vitorias_casa = partida.forma_casa.upper().count('V')
+    jogos_casa = len(partida.forma_casa.split('-'))
+    if vitorias_casa >= 4 and jogos_casa >= 5:
+        observacoes.append({
+            "texto": f"✓ {partida.time_casa} não perde há {vitorias_casa} vitórias em {jogos_casa} jogos",
+            "impacto": min(3 + vitorias_casa - 4, 5)
+        })
+    elif partida.forma_casa.upper().count('D') >= 3:
+        derrotas = partida.forma_casa.upper().count('D')
+        observacoes.append({
+            "texto": f"⚠ {partida.time_casa} acumula {derrotas} derrotas recentes",
+            "impacto": max(-3 - (derrotas - 3), -5)
+        })
+    
+    # 2. Forma recente - Fora
+    vitorias_fora = partida.forma_fora.upper().count('V')
+    jogos_fora = len(partida.forma_fora.split('-'))
+    if vitorias_fora >= 4 and jogos_fora >= 5:
+        observacoes.append({
+            "texto": f"✓ {partida.time_visitante} em ótima sequência com {vitorias_fora} vitórias",
+            "impacto": min(3 + vitorias_fora - 4, 5)
+        })
+    elif partida.forma_fora.upper().count('D') >= 3:
+        derrotas = partida.forma_fora.upper().count('D')
+        observacoes.append({
+            "texto": f"⚠ {partida.time_visitante} sem vitórias há {derrotas} partidas",
+            "impacto": max(-3 - (derrotas - 3), -5)
+        })
+    
+    # 3. Lesões/Suspensões - Casa
+    lesoes_casa = partida.lesoes_suspensoes_casa if partida.lesoes_suspensoes_casa else partida.lesoes_suspensoes
+    if lesoes_casa and lesoes_casa.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
+        impacto = -2
+        if "titular" in lesoes_casa.lower() or "grave" in lesoes_casa.lower():
+            impacto = -4
+        observacoes.append({
+            "texto": f"⚠ {partida.time_casa} - Desfalques: {lesoes_casa}",
+            "impacto": impacto
+        })
+    
+    # 4. Lesões/Suspensões - Fora
+    lesoes_fora = partida.lesoes_suspensoes_fora
+    if lesoes_fora and lesoes_fora.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
+        impacto = -2
+        if "titular" in lesoes_fora.lower() or "grave" in lesoes_fora.lower():
+            impacto = -4
+        observacoes.append({
+            "texto": f"⚠ {partida.time_visitante} - Desfalques: {lesoes_fora}",
+            "impacto": impacto
+        })
+    
+    # 5. Artilheiro disponível
+    if not partida.artilheiro_disponivel_casa:
+        observacoes.append({
+            "texto": f"⚠ {partida.time_casa} sem artilheiro principal",
+            "impacto": -3
+        })
+    if not partida.artilheiro_disponivel_fora:
+        observacoes.append({
+            "texto": f"⚠ {partida.time_visitante} sem artilheiro principal",
+            "impacto": -3
+        })
+    
+    # 6. Desempenho em casa
+    if detalhes_casa["desempenho_casa_fora"] >= 8.0:
+        observacoes.append({
+            "texto": f"✓ {partida.time_casa} com forte desempenho em casa (média {partida.media_gols_marcados_casa:.1f} gols)",
+            "impacto": 3
+        })
+    
+    # 7. Desempenho fora
+    if detalhes_fora["desempenho_casa_fora"] >= 8.0:
+        observacoes.append({
+            "texto": f"✓ {partida.time_visitante} com forte desempenho fora (média {partida.media_gols_marcados_fora:.1f} gols)",
+            "impacto": 3
+        })
+    elif detalhes_fora["desempenho_casa_fora"] <= 3.0:
+        observacoes.append({
+            "texto": f"⚠ {partida.time_visitante} com dificuldades jogando fora de casa",
+            "impacto": -3
+        })
+    
+    # 8. Árbitro rigoroso
+    if partida.media_cartoes_arbitro >= 5:
+        observacoes.append({
+            "texto": f"ℹ️ Árbitro {partida.arbitro} conhecido por ser rigoroso (média {partida.media_cartoes_arbitro:.1f} cartões)",
+            "impacto": 0
+        })
+    
+    # 9. Condições adversas
+    if partida.condicoes_externas and "chuva" in partida.condicoes_externas.lower():
+        observacoes.append({
+            "texto": f"⚠ Condições climáticas adversas: {partida.condicoes_externas}",
+            "impacto": -2
+        })
+    
+    # 10. Adicionar observações manuais do usuário (se existirem)
+    if partida.observacoes_contextuais:
+        for obs in partida.observacoes_contextuais:
+            observacoes.append({
+                "texto": f"ℹ️ {obs}",
+                "impacto": 0  # Observações manuais têm impacto neutro por padrão
+            })
+    
+    return observacoes
+
+
 def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     """
     VERSÃO 2.0: Calcula scores independentes para Casa, Empate e Fora
