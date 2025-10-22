@@ -280,3 +280,49 @@ agent_communication:
       5. ✅ Formulário organizado em 3 abas: Geral | Casa | Fora
       
       Status: Pronto para testes completos
+  
+  - agent: "main"
+    message: |
+      APRIMORAMENTOS FINAIS - RELATÓRIO DE ANÁLISE 2.0
+      
+      Implementações realizadas (baseadas no documento de requisitos):
+      
+      1️⃣ **EV (Expected Value) - Layout Simplificado**
+         ✅ Formato compacto em uma única linha: "EV Casa: -37.6% | EV Empate: +10.6% | EV Fora: +81.0%"
+         ✅ Adicionada linha "Proposta de valor detectada" listando opções com EV positivo
+         ✅ Nota de rodapé: "O EV é apenas informativo e não influencia a decisão estatística"
+         ✅ EV não recomenda apostas (apenas informativo)
+      
+      2️⃣ **Probabilidades com 2 Casas Decimais**
+         ✅ Todas as probabilidades exibidas com .toFixed(2) para precisão
+         ✅ Diferença entre 1º e 2º também com 2 casas decimais
+      
+      3️⃣ **Seção de Síntese Adicionada**
+         ✅ Card final com resumo claro:
+            - Aposta estatística (resultado previsto)
+            - Confiança (com percentual)
+            - Sobre o EV (resumo informativo)
+         ✅ Design com destaque em gradiente verde
+      
+      4️⃣ **Rodapé Automático**
+         ✅ Mensagem: "Análise automatizada baseada em fatores estatísticos ponderados."
+         ✅ Estilo discreto e profissional
+      
+      5️⃣ **Ajustes Visuais**
+         ✅ Redução de espaçamento entre probabilidades e EV (de mb-6 para mb-4)
+         ✅ Espaçamento consistente entre seções (mb-3)
+         ✅ Ícones consistentes mantidos (⚽ 📈 💰 🗞️ 🔎)
+      
+      6️⃣ **Estrutura Final Implementada**
+         ✅ Cabeçalho: Liga – Rodada – Times – Data/Hora – Estádio
+         ✅ Previsão 1X2 com probabilidades normalizadas
+         ✅ Gauge de confiança circular
+         ✅ EV simplificado e informativo
+         ✅ Justificativa natural e descritiva
+         ✅ Observações contextuais com impacto
+         ✅ Síntese final
+         ✅ Rodapé profissional
+      
+      ✅ **Todas as funcionalidades solicitadas foram implementadas**
+      
+      Status: Sistema completo e pronto para uso. Relatório coerente, limpo e profissional.
