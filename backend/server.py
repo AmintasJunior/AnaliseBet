@@ -629,6 +629,37 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
         "contexto_externo": round(score_contexto, 2)
     }
     
+    # ====== DETALHES PONDERADOS (com peso e valor ponderado) ======
+    pesos_dict = {
+        "forma_recente": PESO_FORMA * 100,  # 25%
+        "forca_elenco": PESO_FORCA_ELENCO * 100,  # 15%
+        "desempenho_casa_fora": PESO_DESEMPENHO * 100,  # 15%
+        "historico_h2h": PESO_H2H * 100,  # 15%
+        "motivacao_contexto": PESO_MOTIVACAO * 100,  # 10%
+        "notas_analista": PESO_ANALISTA * 100,  # 10%
+        "contexto_externo": PESO_CONTEXTO * 100  # 10%
+    }
+    
+    detalhes_casa_ponderados = {}
+    for fator, nota in detalhes_casa.items():
+        peso = pesos_dict[fator]
+        ponderado = round((nota * peso) / 10, 2)  # Valor ponderado
+        detalhes_casa_ponderados[fator] = {
+            "nota": nota,
+            "peso": peso,
+            "ponderado": ponderado
+        }
+    
+    detalhes_fora_ponderados = {}
+    for fator, nota in detalhes_fora.items():
+        peso = pesos_dict[fator]
+        ponderado = round((nota * peso) / 10, 2)  # Valor ponderado
+        detalhes_fora_ponderados[fator] = {
+            "nota": nota,
+            "peso": peso,
+            "ponderado": ponderado
+        }
+    
     return {
         "probabilidade_casa": prob_casa,
         "probabilidade_empate": prob_empate,
@@ -638,6 +669,8 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
         "diferenca_probabilidade": round(diferenca, 2),
         "detalhes_casa": detalhes_casa,
         "detalhes_fora": detalhes_fora,
+        "detalhes_casa_ponderados": detalhes_casa_ponderados,
+        "detalhes_fora_ponderados": detalhes_fora_ponderados,
         "scores_brutos": {
             "casa": round(score_casa, 2),
             "empate": round(score_empate, 2),
