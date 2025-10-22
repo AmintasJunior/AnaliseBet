@@ -427,26 +427,31 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     prob_empate = round(prob_empate, 2)
     prob_fora = round(100 - prob_casa - prob_empate, 2)
     
-    # ====== CÁLCULO DA CONFIANÇA ======
+    # ====== CÁLCULO DA CONFIANÇA (VERSÃO 2.0 - Limite 5%) ======
     probabilidades = [prob_casa, prob_empate, prob_fora]
     prob_max = max(probabilidades)
     prob_segunda = sorted(probabilidades, reverse=True)[1]
     diferenca = prob_max - prob_segunda
     
-    if diferenca > 20:
-        confianca = "Alta"
-    elif diferenca >= 10:
-        confianca = "Média"
+    # Novo sistema: diferença < 5% = Sem recomendação segura
+    if diferenca < 5:
+        confianca = "Sem recomendação segura"
+        resultado_previsto = "Sem recomendação"
     else:
-        confianca = "Baixa"
-    
-    # ====== IDENTIFICAR RESULTADO PREVISTO ======
-    if prob_casa > prob_empate and prob_casa > prob_fora:
-        resultado_previsto = "Casa"
-    elif prob_fora > prob_casa and prob_fora > prob_empate:
-        resultado_previsto = "Fora"
-    else:
-        resultado_previsto = "Empate"
+        if diferenca >= 20:
+            confianca = "Alta"
+        elif diferenca >= 10:
+            confianca = "Média"
+        else:
+            confianca = "Baixa"
+        
+        # ====== IDENTIFICAR RESULTADO PREVISTO ======
+        if prob_casa > prob_empate and prob_casa > prob_fora:
+            resultado_previsto = "Casa"
+        elif prob_fora > prob_casa and prob_fora > prob_empate:
+            resultado_previsto = "Fora"
+        else:
+            resultado_previsto = "Empate"
     
     # ====== DETALHES DOS FATORES ======
     detalhes_casa = {
