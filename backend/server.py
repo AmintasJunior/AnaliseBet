@@ -671,16 +671,30 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     prob_empate = analise_data["probabilidade_empate"]
     prob_fora = analise_data["probabilidade_fora"]
     
+    # Cabeçalho da justificativa
+    if confianca == "Sem recomendação segura":
+        justificativa = f"**⚠️ SEM RECOMENDAÇÃO SEGURA**\n"
+        justificativa += f"Diferença de apenas {analise_data['diferenca_probabilidade']:.2f}% entre os resultados.\n\n"
+        justificativa += f"Probabilidades: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n\n"
+        justificativa += "**Análise:** Os times estão extremamente equilibrados. Não há vantagem clara para nenhum dos lados.\n"
+        return justificativa
+    
     # Seleciona detalhes do time correto
     if resultado == "Casa":
         detalhes = analise_data["detalhes_casa"]
+        detalhes_oponente = analise_data["detalhes_fora"]
         time_nome = partida.time_casa
+        time_oponente = partida.time_visitante
     elif resultado == "Fora":
         detalhes = analise_data["detalhes_fora"]
+        detalhes_oponente = analise_data["detalhes_casa"]
         time_nome = partida.time_visitante
+        time_oponente = partida.time_casa
     else:
-        detalhes = analise_data["detalhes_casa"]  # Para empate, usa média
+        detalhes = analise_data["detalhes_casa"]
+        detalhes_oponente = analise_data["detalhes_fora"]
         time_nome = None
+        time_oponente = None
     
     # Cabeçalho da justificativa
     if time_nome:
@@ -689,7 +703,7 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
         justificativa = "**Previsão: Empate**\n"
     
     justificativa += f"Probabilidade: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n"
-    justificativa += f"Confiança: **{confianca}** ({analise_data['diferenca_probabilidade']} pontos de diferença)\n\n"
+    justificativa += f"Confiança: **{confianca}** ({analise_data['diferenca_probabilidade']:.2f}% de diferença)\n\n"
     
     # Identifica os 3 fatores mais relevantes
     fatores_ordenados = sorted(detalhes.items(), key=lambda x: x[1], reverse=True)[:3]
@@ -699,7 +713,15 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     for i, (fator, valor) in enumerate(fatores_ordenados, 1):
         emoji = "🟢" if valor >= 7 else "🟡" if valor >= 5 else "🔴"
         fator_nome = fator.replace("_", " ").title()
-        justificativa += f"{i}. {emoji} {fator_nome}: {valor}/10\n"
+        
+        # Comparação com oponente
+        valor_oponente = detalhes_oponente.get(fator, 5.0)
+        diferenca = valor - valor_oponente
+        comp = ""
+        if abs(diferenca) >= 2:
+            comp = f" (vs {valor_oponente:.1f} do oponente)"
+        
+        justificativa += f"{i}. {emoji} {fator_nome}: {valor:.1f}/10{comp}\n"
     
     # Adiciona observações específicas
     justificativa += "\n**Observações:**\n"
@@ -709,24 +731,44 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
             justificativa += f"✓ {partida.time_casa} em excelente forma recente ({partida.forma_casa})\n"
         if detalhes["desempenho_casa_fora"] >= 7:
             justificativa += f"✓ Forte desempenho jogando em casa (média {partida.media_gols_marcados_casa:.1f} gols)\n"
+        if partida.desempenho_especifico_casa:
+            justificativa += f"✓ Desempenho em casa: {partida.desempenho_especifico_casa}\n"
     elif resultado == "Fora":
         if detalhes["forma_recente"] >= 7:
             justificativa += f"✓ {partida.time_visitante} em excelente forma recente ({partida.forma_fora})\n"
         if detalhes["desempenho_casa_fora"] >= 7:
             justificativa += f"✓ Forte desempenho jogando fora (média {partida.media_gols_marcados_fora:.1f} gols)\n"
+        if partida.desempenho_especifico_fora:
+            justificativa += f"✓ Desempenho fora: {partida.desempenho_especifico_fora}\n"
     else:
         justificativa += "✓ Times equilibrados em múltiplos fatores\n"
         justificativa += f"✓ Histórico sugere equilíbrio: {partida.historico_h2h}\n"
     
-    # Adiciona alertas
-    if not partida.artilheiro_disponivel:
-        justificativa += "⚠ Artilheiro indisponível pode impactar o ataque\n"
+    # Adiciona alertas de lesões (Casa)
+    lesoes_casa = partida.lesoes_suspensoes_casa if partida.lesoes_suspensoes_casa else partida.lesoes_suspensoes
+    if lesoes_casa and lesoes_casa.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
+        justificativa += f"⚠ {partida.time_casa} - Desfalques: {lesoes_casa}\n"
     
-    if partida.lesoes_suspensoes and partida.lesoes_suspensoes.lower() not in ["nenhuma", "sem desfalques", "-"]:
-        justificativa += f"⚠ Atenção aos desfalques: {partida.lesoes_suspensoes}\n"
+    # Adiciona alertas de lesões (Fora)
+    lesoes_fora = partida.lesoes_suspensoes_fora if partida.lesoes_suspensoes_fora else ""
+    if lesoes_fora and lesoes_fora.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
+        justificativa += f"⚠ {partida.time_visitante} - Desfalques: {lesoes_fora}\n"
     
+    # Adiciona notícias
+    noticias = []
+    if partida.noticia_1:
+        noticias.append(partida.noticia_1)
+    if partida.noticia_2:
+        noticias.append(partida.noticia_2)
+    if partida.noticia_3:
+        noticias.append(partida.noticia_3)
     if partida.noticias_relevantes:
-        justificativa += f"ℹ️ Contexto: {partida.noticias_relevantes}\n"
+        noticias.append(partida.noticias_relevantes)
+    
+    if noticias:
+        justificativa += "\n**Contexto e Notícias:**\n"
+        for i, noticia in enumerate(noticias[:3], 1):
+            justificativa += f"ℹ️ {i}. {noticia}\n"
     
     return justificativa
 
