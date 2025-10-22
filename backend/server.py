@@ -866,66 +866,110 @@ def classificar_ev(ev: float) -> str:
 
 def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     """
-    VERSÃO 2.0: Gera justificativa automática para previsão 1X2
-    Explica os principais fatores que influenciaram a previsão
+    VERSÃO 2.0 APRIMORADA: Gera justificativa natural e descritiva
+    Foca na explicação qualitativa sem repetir números excessivamente
     """
     resultado = analise_data["resultado_previsto"]
     confianca = analise_data["confianca"]
-    prob_casa = analise_data["probabilidade_casa"]
-    prob_empate = analise_data["probabilidade_empate"]
-    prob_fora = analise_data["probabilidade_fora"]
+    diferenca = analise_data["diferenca_probabilidade"]
     
-    # Cabeçalho da justificativa
+    # Caso sem recomendação segura
     if confianca == "Sem recomendação segura":
-        justificativa = "**⚠️ SEM RECOMENDAÇÃO SEGURA**\n"
-        justificativa += f"Diferença de apenas {analise_data['diferenca_probabilidade']:.2f}% entre os resultados.\n\n"
-        justificativa += f"Probabilidades: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n\n"
-        justificativa += "**Análise:** Os times estão extremamente equilibrados. Não há vantagem clara para nenhum dos lados.\n"
-        return justificativa
+        return (
+            f"Os times estão extremamente equilibrados estatisticamente. "
+            f"A diferença entre os resultados mais prováveis é de apenas {diferenca:.2f}%, "
+            f"o que torna qualquer previsão insegura. "
+            f"Não há vantagem clara para nenhum dos lados nesta partida."
+        )
     
     # Seleciona detalhes do time correto
     if resultado == "Casa":
         detalhes = analise_data["detalhes_casa"]
         detalhes_oponente = analise_data["detalhes_fora"]
-        time_nome = partida.time_casa
+        time_favorito = partida.time_casa
+        time_oponente = partida.time_visitante
+        local = "em casa"
     elif resultado == "Fora":
         detalhes = analise_data["detalhes_fora"]
         detalhes_oponente = analise_data["detalhes_casa"]
-        time_nome = partida.time_visitante
+        time_favorito = partida.time_visitante
+        time_oponente = partida.time_casa
+        local = "fora de casa"
     else:
-        detalhes = analise_data["detalhes_casa"]
-        detalhes_oponente = analise_data["detalhes_fora"]
-        time_nome = None
+        # Empate
+        justificativa = (
+            f"A análise estatística indica grande equilíbrio entre {partida.time_casa} e {partida.time_visitante}. "
+            f"Ambos os times apresentam características similares nos principais fatores analisados. "
+        )
+        
+        # Verifica histórico
+        if "empate" in partida.historico_h2h.lower() or "e" in partida.historico_h2h.upper():
+            justificativa += f"O histórico de confrontos diretos reforça a tendência de igualdade. "
+        
+        # Confiança
+        if confianca == "Baixa":
+            justificativa += f"No entanto, a confiança é baixa ({diferenca:.2f}%), indicando que o resultado ainda é incerto."
+        else:
+            justificativa += f"A confiança na previsão de empate é {confianca.lower()} ({diferenca:.2f}%)."
+        
+        return justificativa
     
-    # Cabeçalho da justificativa
-    if time_nome:
-        justificativa = f"**Previsão: Vitória do {time_nome}**\n"
+    # Monta justificativa natural para vitória
+    justificativa = f"O {time_favorito} apresenta "
+    
+    # Analisa forma recente
+    if detalhes["forma_recente"] >= 7:
+        vitorias = partida.forma_casa.upper().count('V') if resultado == "Casa" else partida.forma_fora.upper().count('V')
+        justificativa += f"excelente momento com forma recente superior"
+        if vitorias >= 3:
+            justificativa += f" (sequência invicta)"
+        justificativa += ", "
+    elif detalhes["forma_recente"] >= 5:
+        justificativa += "forma recente estável, "
+    
+    # Analisa desempenho específico
+    if detalhes["desempenho_casa_fora"] >= 7:
+        justificativa += f"forte desempenho jogando {local} "
+        if resultado == "Casa":
+            justificativa += f"com média de {partida.media_gols_marcados_casa:.1f} gols marcados"
+        else:
+            justificativa += f"com média de {partida.media_gols_marcados_fora:.1f} gols marcados"
+        justificativa += ", "
+    
+    # Analisa força do elenco
+    if detalhes["forca_elenco"] >= 7:
+        justificativa += "e elenco bem estruturado. "
     else:
-        justificativa = "**Previsão: Empate**\n"
+        justificativa += "mas enfrenta problemas no elenco. "
     
-    justificativa += f"Probabilidade: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n"
-    justificativa += f"Confiança: **{confianca}** ({analise_data['diferenca_probabilidade']:.2f}% de diferença)\n\n"
+    # Compara com oponente
+    diferenca_forma = detalhes["forma_recente"] - detalhes_oponente["forma_recente"]
+    diferenca_desempenho = detalhes["desempenho_casa_fora"] - detalhes_oponente["desempenho_casa_fora"]
     
-    # Identifica os 3 fatores mais relevantes
-    fatores_ordenados = sorted(detalhes.items(), key=lambda x: x[1], reverse=True)[:3]
-    
-    justificativa += "**Principais fatores:**\n"
-    
-    for i, (fator, valor) in enumerate(fatores_ordenados, 1):
-        emoji = "🟢" if valor >= 7 else "🟡" if valor >= 5 else "🔴"
-        fator_nome = fator.replace("_", " ").title()
+    if diferenca_forma >= 2 or diferenca_desempenho >= 2:
+        justificativa += f"Em contraste, o {time_oponente} "
         
-        # Comparação com oponente
-        valor_oponente = detalhes_oponente.get(fator, 5.0)
-        diferenca = valor - valor_oponente
-        comp = ""
-        if abs(diferenca) >= 2:
-            comp = f" (vs {valor_oponente:.1f} do oponente)"
+        if detalhes_oponente["forma_recente"] < 5:
+            justificativa += "passa por momento irregular "
         
-        justificativa += f"{i}. {emoji} {fator_nome}: {valor:.1f}/10{comp}\n"
+        if detalhes_oponente["desempenho_casa_fora"] < 5:
+            local_oponente = "fora de casa" if resultado == "Casa" else "em casa"
+            justificativa += f"e apresenta dificuldades jogando {local_oponente}. "
+        else:
+            justificativa += "mas mantém desempenho razoável. "
+    else:
+        justificativa += f"O {time_oponente} também apresenta bom desempenho, "
+        justificativa += f"o que reduz a margem de vantagem do favorito. "
     
-    # Adiciona observações específicas
-    justificativa += "\n**Observações:**\n"
+    # Adiciona contexto de confiança
+    if confianca == "Alta":
+        justificativa += f"A diferença de {diferenca:.2f}% entre as probabilidades indica alta confiança na previsão."
+    elif confianca == "Média":
+        justificativa += f"A diferença de {diferenca:.2f}% sugere vantagem moderada, com confiança média na previsão."
+    else:
+        justificativa += f"Apesar da leve vantagem estatística, a diferença de apenas {diferenca:.2f}% indica baixa confiança no resultado."
+    
+    return justificativa
     
     if resultado == "Casa":
         if detalhes["forma_recente"] >= 7:
