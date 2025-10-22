@@ -338,10 +338,20 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     score_forma_casa = calcular_score_forma(partida.forma_casa)
     score_forma_fora = calcular_score_forma(partida.forma_fora)
     
-    # 2. Força do elenco (15%) - combinação de artilheiro + lesões
-    score_artilheiro = calcular_score_artilheiro(partida.artilheiro_disponivel)
-    score_lesoes = calcular_score_lesoes(partida.lesoes_suspensoes)
-    score_forca_elenco = (score_artilheiro + score_lesoes) / 2
+    # 2. Força do elenco (15%) - combinação de artilheiro + lesões (separado para casa e fora)
+    # Casa
+    artilheiro_casa = partida.artilheiro_disponivel_casa if partida.artilheiro_disponivel_casa is not None else partida.artilheiro_disponivel if partida.artilheiro_disponivel is not None else True
+    lesoes_casa = partida.lesoes_suspensoes_casa if partida.lesoes_suspensoes_casa else partida.lesoes_suspensoes if partida.lesoes_suspensoes else "Nenhuma"
+    score_artilheiro_casa = calcular_score_artilheiro(artilheiro_casa)
+    score_lesoes_casa = calcular_score_lesoes(lesoes_casa)
+    score_forca_elenco_casa = (score_artilheiro_casa + score_lesoes_casa) / 2
+    
+    # Fora
+    artilheiro_fora = partida.artilheiro_disponivel_fora if partida.artilheiro_disponivel_fora is not None else partida.artilheiro_disponivel if partida.artilheiro_disponivel is not None else True
+    lesoes_fora = partida.lesoes_suspensoes_fora if partida.lesoes_suspensoes_fora else partida.lesoes_suspensoes if partida.lesoes_suspensoes else "Nenhuma"
+    score_artilheiro_fora = calcular_score_artilheiro(artilheiro_fora)
+    score_lesoes_fora = calcular_score_lesoes(lesoes_fora)
+    score_forca_elenco_fora = (score_artilheiro_fora + score_lesoes_fora) / 2
     
     # 3. Desempenho casa/fora (15%) - baseado em média de gols
     score_desempenho_casa = calcular_score_xg(partida.media_gols_marcados_casa, partida.media_gols_sofridos_casa)
