@@ -52,11 +52,10 @@ const Dashboard = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                ⚽ Análise Inteligente de Apostas
+                ⚽ AnaliseBet 2.0
               </h1>
               <p className="text-gray-600 mt-1">
-                Sistema de recomendação baseado em dados e análise inteligente • 
-                <span className="ml-2 text-emerald-600 font-semibold">Análise 2.0</span>
+                Sistema inteligente de análise de apostas esportivas com probabilidades normalizadas
               </p>
             </div>
             <Button
