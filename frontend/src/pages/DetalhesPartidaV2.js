@@ -170,8 +170,8 @@ const DetalhesPartidaV2 = () => {
           {/* Probabilidades Normalizadas - Card Principal */}
           <Card className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 border-2 border-emerald-300 shadow-xl">
             <CardHeader className="border-b-2 border-emerald-100">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex-1 min-w-[250px]">
                   <CardDescription className="text-emerald-700 font-semibold mb-1 flex items-center gap-2">
                     <Target className="h-4 w-4" />
                     Previsão 1X2 (Probabilidades Coerentes)
@@ -179,13 +179,55 @@ const DetalhesPartidaV2 = () => {
                   <CardTitle className={`text-3xl font-bold ${getResultadoCor(analise_1x2.resultado_previsto)}`}>
                     {analise_1x2.resultado_previsto}
                   </CardTitle>
+                  <div className="mt-2">
+                    <Badge className={`${getConfiancaCor(analise_1x2.confianca)} text-base px-3 py-1 font-bold`}>
+                      {analise_1x2.confianca}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-gray-600 mt-2">
+                    Diferença entre 1º e 2º: {analise_1x2.diferenca_probabilidade}%
+                  </div>
                 </div>
-                <div className="text-right">
-                  <Badge className={`${getConfiancaCor(analise_1x2.confianca)} text-lg px-4 py-2 font-bold`}>
-                    Confiança {analise_1x2.confianca}
-                  </Badge>
-                  <div className="text-sm text-gray-600 mt-2">
-                    Diferença: {analise_1x2.diferenca_probabilidade}%
+                
+                {/* Gauge de Confiança */}
+                <div className="flex flex-col items-center">
+                  <div className="relative w-32 h-32">
+                    <svg className="transform -rotate-90 w-32 h-32">
+                      {/* Círculo de fundo */}
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="#e5e7eb"
+                        strokeWidth="12"
+                        fill="none"
+                      />
+                      {/* Círculo de progresso */}
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke={
+                          analise_1x2.confianca === "Alta" ? "#10b981" :
+                          analise_1x2.confianca === "Média" ? "#f59e0b" :
+                          analise_1x2.confianca === "Baixa" ? "#f97316" :
+                          "#ef4444"
+                        }
+                        strokeWidth="12"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 56}`}
+                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - getConfiancaPercentual(analise_1x2.confianca) / 100)}`}
+                        strokeLinecap="round"
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                    {/* Texto central */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {getConfiancaPercentual(analise_1x2.confianca)}%
+                      </span>
+                      <span className="text-xs text-gray-600">Confiança</span>
+                    </div>
                   </div>
                 </div>
               </div>
