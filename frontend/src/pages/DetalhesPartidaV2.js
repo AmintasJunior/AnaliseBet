@@ -234,7 +234,7 @@ const DetalhesPartidaV2 = () => {
             </CardHeader>
             <CardContent className="pt-6">
               {/* Gráfico de Barras de Probabilidades */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-4 mb-4">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-emerald-600" />
                   Probabilidades (soma = 100%)
