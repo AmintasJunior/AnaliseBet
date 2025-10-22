@@ -970,19 +970,6 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
         justificativa += f"Apesar da leve vantagem estatística, a diferença de apenas {diferenca:.2f}% indica baixa confiança no resultado."
     
     return justificativa
-    if partida.noticia_2:
-        noticias.append(partida.noticia_2)
-    if partida.noticia_3:
-        noticias.append(partida.noticia_3)
-    if partida.noticias_relevantes:
-        noticias.append(partida.noticias_relevantes)
-    
-    if noticias:
-        justificativa += "\n**Contexto e Notícias:**\n"
-        for i, noticia in enumerate(noticias[:3], 1):
-            justificativa += f"ℹ️ {i}. {noticia}\n"
-    
-    return justificativa
 
 
 def analisar_mercado(partida: Partida, mercado: str, odd: float) -> Analise:
