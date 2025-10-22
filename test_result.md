@@ -263,3 +263,20 @@ agent_communication:
       6. ✅ Gráficos de barras horizontais já estavam implementados
       
       Status: Pronto para testes backend
+  
+  - agent: "main"
+    message: |
+      MELHORIAS FINAIS - ANÁLISE 2.0
+      
+      Implementações concluídas:
+      1. ✅ Removido endpoint antigo /api/partidas/{id}/analise (mantido apenas /analise-v2)
+      2. ✅ Validação melhorada no formulário:
+         - Detecta campos obrigatórios não preenchidos
+         - Lista todos os campos faltando com suas respectivas abas
+         - Redireciona para a aba do primeiro campo faltando
+         - Toast com duração de 6 segundos para facilitar leitura
+      3. ✅ EV apenas informativo (não influencia decisão)
+      4. ✅ Sistema de confiança correto (<5% = Sem recomendação, 5-10% = Baixa, 10-20% = Média, >20% = Alta)
+      5. ✅ Formulário organizado em 3 abas: Geral | Casa | Fora
+      
+      Status: Pronto para testes completos
