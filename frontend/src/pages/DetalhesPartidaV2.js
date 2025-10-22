@@ -313,43 +313,36 @@ const DetalhesPartidaV2 = () => {
                 </div>
               </div>
 
-              {/* Análise de Valor (EV) */}
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200 mb-4">
-                <h4 className="font-semibold text-gray-900 mb-3">💰 Análise de Valor Esperado (EV)</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-2 rounded bg-gray-50">
-                    <span className="text-sm text-gray-700">Casa (Odd {partida.odd_casa}x)</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-base font-bold ${analise_1x2.ev_casa > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {analise_1x2.ev_casa > 0 ? '+' : ''}{(analise_1x2.ev_casa * 100).toFixed(2)}%
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded ${analise_1x2.ev_casa > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                        {analise_1x2.ev_casa > 0 ? 'Aposta de valor' : 'Sem valor'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-gray-50">
-                    <span className="text-sm text-gray-700">Empate (Odd {partida.odd_empate}x)</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-base font-bold ${analise_1x2.ev_empate > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {analise_1x2.ev_empate > 0 ? '+' : ''}{(analise_1x2.ev_empate * 100).toFixed(2)}%
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded ${analise_1x2.ev_empate > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                        {analise_1x2.ev_empate > 0 ? 'Aposta de valor' : 'Sem valor'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded bg-gray-50">
-                    <span className="text-sm text-gray-700">Fora (Odd {partida.odd_fora}x)</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-base font-bold ${analise_1x2.ev_fora > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {analise_1x2.ev_fora > 0 ? '+' : ''}{(analise_1x2.ev_fora * 100).toFixed(2)}%
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded ${analise_1x2.ev_fora > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                        {analise_1x2.ev_fora > 0 ? 'Aposta de valor' : 'Sem valor'}
-                      </span>
-                    </div>
-                  </div>
+              {/* Análise de Valor (EV) - Apenas informativo */}
+              <div className="bg-white rounded-lg p-4 border-2 border-gray-200 mb-3">
+                <h4 className="font-semibold text-gray-900 mb-2">💰 Análise de Valor Esperado (EV)</h4>
+                <div className="text-sm text-gray-700 mb-1">
+                  <span className="font-medium">EV Casa:</span> {analise_1x2.ev_casa > 0 ? '+' : ''}{(analise_1x2.ev_casa * 100).toFixed(1)}% | 
+                  <span className="font-medium ml-2">EV Empate:</span> {analise_1x2.ev_empate > 0 ? '+' : ''}{(analise_1x2.ev_empate * 100).toFixed(1)}% | 
+                  <span className="font-medium ml-2">EV Fora:</span> {analise_1x2.ev_fora > 0 ? '+' : ''}{(analise_1x2.ev_fora * 100).toFixed(1)}%
+                </div>
+                {(() => {
+                  const valoresPositivos = [];
+                  if (analise_1x2.ev_casa > 0) valoresPositivos.push("Casa");
+                  if (analise_1x2.ev_empate > 0) valoresPositivos.push("Empate");
+                  if (analise_1x2.ev_fora > 0) valoresPositivos.push("Fora");
+                  
+                  if (valoresPositivos.length > 0) {
+                    return (
+                      <div className="text-sm text-emerald-700 font-medium">
+                        💬 Proposta de valor detectada: {valoresPositivos.join(" / ")}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="text-sm text-gray-600 font-medium">
+                        💬 Nenhuma proposta de valor detectada
+                      </div>
+                    );
+                  }
+                })()}
+                <div className="text-xs text-gray-500 mt-2 italic">
+                  * O EV é apenas informativo e não influencia a decisão estatística principal
                 </div>
               </div>
 
