@@ -35,6 +35,254 @@ class BackendTester:
             "success": success,
             "message": message
         })
+    
+    def test_1_basic_registration(self) -> str:
+        """TESTE 1: Cadastro básico com todos os campos obrigatórios preenchidos"""
+        print("\n=== TESTE 1: Cadastro básico de partida ===")
+        
+        # Dados fornecidos pelo usuário
+        payload = {
+            "campeonato": "LaLiga",
+            "rodada": 15,
+            "time_casa": "Real Madrid",
+            "forma_casa": "V-V-V-E-V",
+            "media_gols_marcados_casa": 2.8,
+            "media_gols_sofridos_casa": 0.6,
+            "time_visitante": "Barcelona",
+            "forma_fora": "V-E-V-V-D",
+            "media_gols_marcados_fora": 2.5,
+            "media_gols_sofridos_fora": 1.0,
+            "historico_h2h": "2V 2E 2D",
+            "arbitro": "Mateu Lahoz",
+            "media_cartoes_arbitro": 5.2,
+            "condicoes_externas": "Tempo limpo",
+            "odd_casa": 2.20,
+            "odd_empate": 3.10,
+            "odd_fora": 3.00,
+            # Campos opcionais preenchidos
+            "noticia_1": "Real Madrid em grande fase",
+            "noticia_2": "Barcelona com desfalques",
+            "observacoes_contextuais": ["Clássico El Clasico", "Partida decisiva"]
+        }
+        
+        try:
+            response = requests.post(f"{self.base_url}/partidas", json=payload)
+            
+            if response.status_code == 200:
+                match_data = response.json()
+                match_id = match_data.get("id")
+                self.created_matches.append(match_id)
+                
+                # Verifica se todos os campos obrigatórios foram salvos
+                required_fields = ["campeonato", "rodada", "time_casa", "time_visitante", 
+                                 "forma_casa", "forma_fora", "historico_h2h", "arbitro", 
+                                 "media_cartoes_arbitro", "condicoes_externas", 
+                                 "odd_casa", "odd_empate", "odd_fora"]
+                
+                missing_fields = [field for field in required_fields if match_data.get(field) is None]
+                
+                if missing_fields:
+                    self.log_test("Teste 1 - Cadastro básico", False, f"Campos obrigatórios ausentes: {missing_fields}")
+                else:
+                    self.log_test("Teste 1 - Cadastro básico", True, f"Partida criada com sucesso. ID: {match_id}")
+                
+                return match_id
+            else:
+                self.log_test("Teste 1 - Cadastro básico", False, f"Status: {response.status_code}, Erro: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_test("Teste 1 - Cadastro básico", False, f"Exceção: {str(e)}")
+            return None
+    
+    def test_2_optional_fields_empty(self) -> str:
+        """TESTE 2: Campos opcionais vazios/null"""
+        print("\n=== TESTE 2: Campos opcionais vazios ===")
+        
+        payload = {
+            "campeonato": "LaLiga",
+            "rodada": 15,
+            "time_casa": "Real Madrid",
+            "forma_casa": "V-V-V-E-V",
+            "media_gols_marcados_casa": 2.8,
+            "media_gols_sofridos_casa": 0.6,
+            "time_visitante": "Barcelona",
+            "forma_fora": "V-E-V-V-D",
+            "media_gols_marcados_fora": 2.5,
+            "media_gols_sofridos_fora": 1.0,
+            "historico_h2h": "2V 2E 2D",
+            "arbitro": "Mateu Lahoz",
+            "media_cartoes_arbitro": 5.2,
+            "condicoes_externas": "Tempo limpo",
+            "odd_casa": 2.20,
+            "odd_empate": 3.10,
+            "odd_fora": 3.00,
+            # Campos opcionais vazios/null
+            "noticia_1": None,
+            "noticia_2": "",
+            "noticia_3": None,
+            "observacoes_contextuais": None,
+            "observacoes_adicionais": ""
+        }
+        
+        try:
+            response = requests.post(f"{self.base_url}/partidas", json=payload)
+            
+            if response.status_code == 200:
+                match_data = response.json()
+                match_id = match_data.get("id")
+                self.created_matches.append(match_id)
+                
+                self.log_test("Teste 2 - Campos opcionais vazios", True, f"Aceita campos opcionais vazios. ID: {match_id}")
+                return match_id
+            else:
+                self.log_test("Teste 2 - Campos opcionais vazios", False, f"Status: {response.status_code}, Erro: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_test("Teste 2 - Campos opcionais vazios", False, f"Exceção: {str(e)}")
+            return None
+    
+    def test_3_observacoes_as_array(self) -> str:
+        """TESTE 3: observacoes_contextuais como array de strings"""
+        print("\n=== TESTE 3: observacoes_contextuais como array ===")
+        
+        payload = {
+            "campeonato": "LaLiga",
+            "rodada": 15,
+            "time_casa": "Real Madrid",
+            "forma_casa": "V-V-V-E-V",
+            "media_gols_marcados_casa": 2.8,
+            "media_gols_sofridos_casa": 0.6,
+            "time_visitante": "Barcelona",
+            "forma_fora": "V-E-V-V-D",
+            "media_gols_marcados_fora": 2.5,
+            "media_gols_sofridos_fora": 1.0,
+            "historico_h2h": "2V 2E 2D",
+            "arbitro": "Mateu Lahoz",
+            "media_cartoes_arbitro": 5.2,
+            "condicoes_externas": "Tempo limpo",
+            "odd_casa": 2.20,
+            "odd_empate": 3.10,
+            "odd_fora": 3.00,
+            # observacoes_contextuais como array
+            "observacoes_contextuais": [
+                "Clássico El Clasico sempre imprevisível",
+                "Real Madrid jogando em casa",
+                "Barcelona com pressão por resultado"
+            ]
+        }
+        
+        try:
+            response = requests.post(f"{self.base_url}/partidas", json=payload)
+            
+            if response.status_code == 200:
+                match_data = response.json()
+                match_id = match_data.get("id")
+                self.created_matches.append(match_id)
+                
+                # Verifica se o array foi salvo corretamente
+                observacoes = match_data.get("observacoes_contextuais")
+                if isinstance(observacoes, list) and len(observacoes) == 3:
+                    self.log_test("Teste 3 - Array observações", True, f"Array salvo corretamente com {len(observacoes)} itens. ID: {match_id}")
+                else:
+                    self.log_test("Teste 3 - Array observações", False, f"Array não salvo corretamente: {observacoes}")
+                
+                return match_id
+            else:
+                self.log_test("Teste 3 - Array observações", False, f"Status: {response.status_code}, Erro: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_test("Teste 3 - Array observações", False, f"Exceção: {str(e)}")
+            return None
+    
+    def test_4_validation_missing_fields(self):
+        """TESTE 4: Validação - campos obrigatórios ausentes"""
+        print("\n=== TESTE 4: Validação de campos obrigatórios ===")
+        
+        # Payload sem campos obrigatórios
+        payload = {
+            "campeonato": "LaLiga",
+            # "rodada": 15,  # Campo obrigatório ausente
+            # "time_casa": "Real Madrid",  # Campo obrigatório ausente
+            "forma_casa": "V-V-V-E-V",
+            "media_gols_marcados_casa": 2.8,
+            "media_gols_sofridos_casa": 0.6,
+            "time_visitante": "Barcelona",
+            "forma_fora": "V-E-V-V-D",
+            # "historico_h2h": "2V 2E 2D",  # Campo obrigatório ausente
+            "arbitro": "Mateu Lahoz",
+            "media_cartoes_arbitro": 5.2,
+            "condicoes_externas": "Tempo limpo",
+            "odd_casa": 2.20,
+            "odd_empate": 3.10,
+            "odd_fora": 3.00
+        }
+        
+        try:
+            response = requests.post(f"{self.base_url}/partidas", json=payload)
+            
+            if response.status_code == 422:  # Validation error expected
+                error_data = response.json()
+                self.log_test("Teste 4 - Validação campos obrigatórios", True, f"Erro de validação retornado corretamente: {response.status_code}")
+            elif response.status_code == 400:  # Bad request also acceptable
+                self.log_test("Teste 4 - Validação campos obrigatórios", True, f"Erro de validação retornado: {response.status_code}")
+            else:
+                self.log_test("Teste 4 - Validação campos obrigatórios", False, f"Deveria retornar erro de validação, mas retornou: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Teste 4 - Validação campos obrigatórios", False, f"Exceção: {str(e)}")
+    
+    def test_5_verify_response_completeness(self, match_id: str):
+        """TESTE 5: Verificar se a resposta contém todos os campos corretamente"""
+        print(f"\n=== TESTE 5: Verificar completude da resposta ===")
+        
+        if not match_id:
+            self.log_test("Teste 5 - Verificar resposta", False, "ID da partida não fornecido")
+            return
+        
+        try:
+            # Busca a partida criada
+            response = requests.get(f"{self.base_url}/partidas/{match_id}")
+            
+            if response.status_code == 200:
+                match_data = response.json()
+                
+                # Campos que devem estar presentes
+                expected_fields = [
+                    "id", "campeonato", "rodada", "time_casa", "time_visitante",
+                    "forma_casa", "forma_fora", "media_gols_marcados_casa", 
+                    "media_gols_sofridos_casa", "media_gols_marcados_fora",
+                    "media_gols_sofridos_fora", "historico_h2h", "arbitro",
+                    "media_cartoes_arbitro", "condicoes_externas", "odd_casa",
+                    "odd_empate", "odd_fora", "criado_em"
+                ]
+                
+                missing_fields = [field for field in expected_fields if field not in match_data]
+                
+                if missing_fields:
+                    self.log_test("Teste 5 - Verificar resposta", False, f"Campos ausentes na resposta: {missing_fields}")
+                else:
+                    # Verifica tipos de dados
+                    type_errors = []
+                    
+                    if not isinstance(match_data.get("rodada"), int):
+                        type_errors.append("rodada deve ser int")
+                    if not isinstance(match_data.get("media_gols_marcados_casa"), (int, float)):
+                        type_errors.append("media_gols_marcados_casa deve ser float")
+                    if not isinstance(match_data.get("odd_casa"), (int, float)):
+                        type_errors.append("odd_casa deve ser float")
+                    
+                    if type_errors:
+                        self.log_test("Teste 5 - Verificar resposta", False, f"Erros de tipo: {type_errors}")
+                    else:
+                        self.log_test("Teste 5 - Verificar resposta", True, "Todos os campos presentes com tipos corretos")
+            else:
+                self.log_test("Teste 5 - Verificar resposta", False, f"Erro ao buscar partida: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Teste 5 - Verificar resposta", False, f"Exceção: {str(e)}")
         
     def test_create_match_complete(self) -> str:
         """Testa criação de partida com dados EXATOS fornecidos pelo usuário"""
