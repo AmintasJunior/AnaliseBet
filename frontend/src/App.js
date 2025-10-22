@@ -12,6 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          {/* Versão 2.0 como única opção */}
           <Route path="/nova-partida" element={<NovaPartidaV2 />} />
           <Route path="/partida/:id" element={<DetalhesPartidaV2 />} />
         </Routes>
