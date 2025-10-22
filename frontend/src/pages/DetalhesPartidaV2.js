@@ -492,7 +492,7 @@ const DetalhesPartidaV2 = () => {
                   <CardDescription>Valores absolutos calculados pelo sistema</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="grid grid-cols-3 gap-4 text-center mb-4">
                     <div className="bg-white rounded-lg p-4 border-2 border-blue-200">
                       <div className="text-xs text-gray-600 mb-1">Casa</div>
                       <div className="text-2xl font-bold text-blue-700">{analise_1x2.scores_brutos.casa}</div>
@@ -506,8 +506,57 @@ const DetalhesPartidaV2 = () => {
                       <div className="text-2xl font-bold text-purple-700">{analise_1x2.scores_brutos.fora}</div>
                     </div>
                   </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-xs text-gray-700 leading-relaxed">
+                      <span className="font-semibold">ℹ️ Legenda:</span> Scores brutos representam a força estatística antes da conversão em probabilidades percentuais. 
+                      Estes valores são calculados pela soma ponderada de todos os fatores (0-100) e depois normalizados usando softmax para garantir que as probabilidades somem 100%.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
+
+              {/* Observações Contextuais */}
+              {analise_1x2.observacoes_contextuais && analise_1x2.observacoes_contextuais.length > 0 && (
+                <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300">
+                  <CardHeader>
+                    <CardTitle className="text-amber-800 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5" />
+                      Observações Contextuais
+                    </CardTitle>
+                    <CardDescription>Fatores adicionais que podem influenciar o resultado</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {analise_1x2.observacoes_contextuais.map((obs, index) => {
+                        const impacto = obs.impacto;
+                        let corImpacto = "text-gray-700 bg-gray-100";
+                        let sinalImpacto = "";
+                        
+                        if (impacto > 0) {
+                          corImpacto = "text-emerald-700 bg-emerald-100";
+                          sinalImpacto = "+";
+                        } else if (impacto < 0) {
+                          corImpacto = "text-red-700 bg-red-100";
+                          sinalImpacto = "";
+                        }
+                        
+                        return (
+                          <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-200">
+                            <div className="flex-1">
+                              <p className="text-sm text-gray-800">{obs.texto}</p>
+                            </div>
+                            {impacto !== 0 && (
+                              <div className={`px-2 py-1 rounded text-xs font-bold ${corImpacto}`}>
+                                Impacto: {sinalImpacto}{impacto}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             {/* Dados da Partida */}
