@@ -392,7 +392,7 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     # ====== CÁLCULO SCORE CASA (0-100) ======
     score_casa = (
         score_forma_casa * PESO_FORMA * 10 +
-        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_forca_elenco_casa * PESO_FORCA_ELENCO * 10 +
         score_desempenho_casa * PESO_DESEMPENHO * 10 +
         score_h2h_casa * PESO_H2H * 10 +
         score_motivacao * PESO_MOTIVACAO * 10 +
@@ -403,7 +403,7 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     # ====== CÁLCULO SCORE FORA (0-100) ======
     score_fora = (
         score_forma_fora * PESO_FORMA * 10 +
-        score_forca_elenco * PESO_FORCA_ELENCO * 10 +
+        score_forca_elenco_fora * PESO_FORCA_ELENCO * 10 +
         score_desempenho_fora * PESO_DESEMPENHO * 10 +
         score_h2h_fora * PESO_H2H * 10 +
         score_motivacao * PESO_MOTIVACAO * 10 +
