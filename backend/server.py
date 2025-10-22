@@ -479,7 +479,7 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     # ====== DETALHES DOS FATORES ======
     detalhes_casa = {
         "forma_recente": round(score_forma_casa, 2),
-        "forca_elenco": round(score_forca_elenco, 2),
+        "forca_elenco": round(score_forca_elenco_casa, 2),
         "desempenho_casa_fora": round(score_desempenho_casa, 2),
         "historico_h2h": round(score_h2h_casa, 2),
         "motivacao_contexto": round(score_motivacao, 2),
@@ -489,7 +489,7 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     
     detalhes_fora = {
         "forma_recente": round(score_forma_fora, 2),
-        "forca_elenco": round(score_forca_elenco, 2),
+        "forca_elenco": round(score_forca_elenco_fora, 2),
         "desempenho_casa_fora": round(score_desempenho_fora, 2),
         "historico_h2h": round(score_h2h_fora, 2),
         "motivacao_contexto": round(score_motivacao, 2),
