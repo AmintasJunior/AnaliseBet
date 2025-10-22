@@ -73,6 +73,30 @@ const DetalhesPartidaV2 = () => {
     }
   };
 
+  const formatarDataHoraCompacta = (dataHora) => {
+    if (!dataHora) return null;
+    try {
+      const date = new Date(dataHora);
+      const dia = date.getDate().toString().padStart(2, '0');
+      const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+      const hora = date.getHours().toString().padStart(2, '0');
+      const minuto = date.getMinutes().toString().padStart(2, '0');
+      return `${dia}/${mes} ${hora}:${minuto}`;
+    } catch {
+      return dataHora;
+    }
+  };
+
+  const gerarCabecalhoPartida = () => {
+    const partes = [];
+    if (partida.campeonato) partes.push(partida.campeonato);
+    if (partida.rodada) partes.push(`Rodada ${partida.rodada}`);
+    partes.push(`${partida.time_casa} vs ${partida.time_visitante}`);
+    if (partida.data_hora) partes.push(formatarDataHoraCompacta(partida.data_hora));
+    if (partida.local_estadio) partes.push(partida.local_estadio);
+    return partes.join(' – ');
+  };
+
   const getResultadoCor = (resultado) => {
     switch (resultado) {
       case "Casa":
