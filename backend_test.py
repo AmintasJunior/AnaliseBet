@@ -283,7 +283,40 @@ class BackendTester:
                 
         except Exception as e:
             self.log_test("Teste 5 - Verificar resposta", False, f"Exceção: {str(e)}")
+    
+    def cleanup_matches(self):
+        """Limpa partidas criadas durante os testes"""
+        print("\n=== LIMPEZA: Removendo partidas de teste ===")
         
+        for match_id in self.created_matches:
+            try:
+                requests.delete(f"{self.base_url}/partidas/{match_id}")
+                print(f"    Removida partida: {match_id}")
+            except:
+                pass
+    
+    def run_specific_tests(self):
+        """Executa os testes específicos solicitados pelo usuário"""
+        print("🚀 INICIANDO TESTES ESPECÍFICOS DO ENDPOINT POST /api/partidas")
+        print(f"URL Base: {self.base_url}")
+        print("=" * 80)
+        
+        # Executa os 5 testes solicitados
+        match_id_1 = self.test_1_basic_registration()
+        match_id_2 = self.test_2_optional_fields_empty()
+        match_id_3 = self.test_3_observacoes_as_array()
+        self.test_4_validation_missing_fields()
+        
+        # Usa o primeiro match criado para verificar a resposta
+        if match_id_1:
+            self.test_5_verify_response_completeness(match_id_1)
+        
+        # Limpeza
+        self.cleanup_matches()
+        
+        # Relatório final
+        self.print_final_report()
+    
     def test_create_match_complete(self) -> str:
         """Testa criação de partida com dados EXATOS fornecidos pelo usuário"""
         print("\n=== TESTE 1: POST /api/partidas - Criar partida com dados específicos ===")
