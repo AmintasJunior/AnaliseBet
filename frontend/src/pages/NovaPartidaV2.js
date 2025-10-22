@@ -62,6 +62,45 @@ const NovaPartidaV2 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validação de campos obrigatórios
+    const camposObrigatorios = [
+      { campo: 'campeonato', nome: 'Campeonato', aba: 'geral' },
+      { campo: 'rodada', nome: 'Rodada', aba: 'geral' },
+      { campo: 'arbitro', nome: 'Árbitro', aba: 'geral' },
+      { campo: 'media_cartoes_arbitro', nome: 'Média de Cartões do Árbitro', aba: 'geral' },
+      { campo: 'condicoes_externas', nome: 'Condições Externas', aba: 'geral' },
+      { campo: 'historico_h2h', nome: 'Histórico H2H', aba: 'geral' },
+      { campo: 'odd_casa', nome: 'Odd Casa', aba: 'geral' },
+      { campo: 'odd_empate', nome: 'Odd Empate', aba: 'geral' },
+      { campo: 'odd_fora', nome: 'Odd Fora', aba: 'geral' },
+      { campo: 'time_casa', nome: 'Time da Casa', aba: 'casa' },
+      { campo: 'forma_casa', nome: 'Forma (Casa)', aba: 'casa' },
+      { campo: 'media_gols_marcados_casa', nome: 'Média de Gols Marcados (Casa)', aba: 'casa' },
+      { campo: 'media_gols_sofridos_casa', nome: 'Média de Gols Sofridos (Casa)', aba: 'casa' },
+      { campo: 'time_visitante', nome: 'Time Visitante', aba: 'fora' },
+      { campo: 'forma_fora', nome: 'Forma (Fora)', aba: 'fora' },
+      { campo: 'media_gols_marcados_fora', nome: 'Média de Gols Marcados (Fora)', aba: 'fora' },
+      { campo: 'media_gols_sofridos_fora', nome: 'Média de Gols Sofridos (Fora)', aba: 'fora' }
+    ];
+
+    const camposFaltando = camposObrigatorios.filter(item => !formData[item.campo] || formData[item.campo] === '');
+
+    if (camposFaltando.length > 0) {
+      const primeiroFaltando = camposFaltando[0];
+      
+      // Mudar para a aba do primeiro campo faltando
+      setActiveTab(primeiroFaltando.aba);
+      
+      // Mostrar mensagem com todos os campos faltando
+      const listaCampos = camposFaltando.map(item => `• ${item.nome} (${item.aba === 'geral' ? 'Geral' : item.aba === 'casa' ? 'Casa' : 'Fora'})`).join('\n');
+      toast.error(
+        `Campos obrigatórios não preenchidos:\n${listaCampos}`,
+        { duration: 6000 }
+      );
+      return;
+    }
+
     setLoading(true);
 
     try {
