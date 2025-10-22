@@ -249,3 +249,17 @@ agent_communication:
       - Testar backend para garantir probabilidades somam 100%
       - Testar frontend v2.0
       - Validar com partida de exemplo
+  
+  - agent: "main"
+    message: |
+      CONTINUAÇÃO - LIMPEZA E MELHORIAS v2.0
+      
+      Ações realizadas:
+      1. ✅ Removidos arquivos antigos (DetalhesPartida.js, NovaPartida.js)
+      2. ✅ App.js atualizado - v2.0 é a ÚNICA versão agora
+      3. ✅ Cabeçalho melhorado com formato: "Liga – Rodada X – Time1 vs Time2 – DD/MM HH:MM – Estádio"
+      4. ✅ Adicionado gauge circular para visualizar confiança
+      5. ✅ Dashboard atualizado com título "AnaliseBet 2.0"
+      6. ✅ Gráficos de barras horizontais já estavam implementados
+      
+      Status: Pronto para testes backend
