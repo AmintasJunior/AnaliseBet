@@ -797,12 +797,259 @@ class BackendTester:
         return failed_tests == 0
 
 
+    def test_analisebet_v2_complete(self):
+        """TESTE COMPLETO ANALISEBE V2.0 - Conforme solicitado no review"""
+        print("\n" + "=" * 80)
+        print("🚀 TESTE COMPLETO ANALISEBE V2.0 - SISTEMA DE ANÁLISE DE APOSTAS ESPORTIVAS")
+        print("=" * 80)
+        
+        # 1. HEALTH CHECK
+        self.test_health_check()
+        
+        # 2. CRIAR PARTIDA DE TESTE (dados exatos do review)
+        match_id = self.test_create_match_brasileirao()
+        
+        if not match_id:
+            self.log_test("TESTE ANALISEBE V2.0", False, "Falha ao criar partida de teste")
+            return
+        
+        # 3. BUSCAR ANÁLISE V2.0
+        self.test_analysis_v2_brasileirao(match_id)
+        
+        # 4. VALIDAÇÕES ESPECÍFICAS
+        self.test_v2_probability_validations(match_id)
+        
+        # Limpeza
+        self.cleanup_matches()
+    
+    def test_health_check(self):
+        """1. Health Check - GET /api/partidas"""
+        print("\n=== 1. HEALTH CHECK ===")
+        
+        try:
+            response = requests.get(f"{self.base_url}/partidas")
+            
+            if response.status_code == 200:
+                self.log_test("Health Check", True, "Servidor respondendo corretamente")
+            else:
+                self.log_test("Health Check", False, f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Health Check", False, f"Exceção: {str(e)}")
+    
+    def test_create_match_brasileirao(self) -> str:
+        """2. Criar partida de teste - Dados exatos do review"""
+        print("\n=== 2. CRIAR PARTIDA DE TESTE - BRASILEIRÃO ===")
+        
+        # Payload EXATO fornecido no review
+        payload = {
+            "campeonato": "Brasileirão",
+            "rodada": 1,
+            "data_hora": "2025-01-15T20:00:00",
+            "local_estadio": "Maracanã",
+            "time_casa": "Flamengo",
+            "time_visitante": "Palmeiras",
+            "forma_casa": "V-V-E-V-D",
+            "forma_fora": "E-V-D-V-V",
+            "media_gols_marcados_casa": 2.1,
+            "media_gols_sofridos_casa": 0.8,
+            "media_gols_marcados_fora": 1.9,
+            "media_gols_sofridos_fora": 1.1,
+            "historico_h2h": "3V 1E 2D",
+            "arbitro": "Anderson Daronco",
+            "media_cartoes_arbitro": 4.2,
+            "condicoes_externas": "Tempo bom",
+            "odd_casa": 1.85,
+            "odd_empate": 3.20,
+            "odd_fora": 4.50,
+            "noticia_1": "Flamengo com elenco completo",
+            "noticia_1_impacto": 3,
+            "noticia_2": "Palmeiras desfalcado",
+            "noticia_2_impacto": -2,
+            "artilheiro_disponivel_casa": True,
+            "artilheiro_disponivel_fora": True
+        }
+        
+        try:
+            response = requests.post(f"{self.base_url}/partidas", json=payload)
+            
+            if response.status_code == 200:
+                match_data = response.json()
+                match_id = match_data.get("id")
+                self.created_matches.append(match_id)
+                
+                self.log_test("Criar partida Brasileirão", True, f"Partida criada com ID: {match_id}")
+                print(f"    📊 Partida: {payload['time_casa']} vs {payload['time_visitante']}")
+                print(f"    🏟️  Local: {payload['local_estadio']} - {payload['campeonato']} Rodada {payload['rodada']}")
+                
+                return match_id
+            else:
+                self.log_test("Criar partida Brasileirão", False, f"Status: {response.status_code}, Erro: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_test("Criar partida Brasileirão", False, f"Exceção: {str(e)}")
+            return None
+    
+    def test_analysis_v2_brasileirao(self, match_id: str):
+        """3. Buscar análise v2.0 - Validações específicas"""
+        print(f"\n=== 3. ANÁLISE V2.0 - GET /api/partidas/{match_id}/analise-v2 ===")
+        
+        try:
+            response = requests.get(f"{self.base_url}/partidas/{match_id}/analise-v2")
+            
+            if response.status_code != 200:
+                self.log_test("Análise v2.0 - Endpoint", False, f"Status: {response.status_code}")
+                return
+            
+            data = response.json()
+            analise = data.get("analise_1x2", {})
+            
+            # Verifica estrutura básica
+            required_fields = [
+                "probabilidade_casa", "probabilidade_empate", "probabilidade_fora",
+                "resultado_previsto", "confianca", "diferenca_probabilidade",
+                "ev_casa", "ev_empate", "ev_fora", "justificativa",
+                "observacoes_contextuais", "scores_brutos",
+                "detalhes_casa_ponderados", "detalhes_fora_ponderados"
+            ]
+            
+            missing_fields = [field for field in required_fields if field not in analise]
+            
+            if missing_fields:
+                self.log_test("Análise v2.0 - Estrutura", False, f"Campos ausentes: {missing_fields}")
+            else:
+                self.log_test("Análise v2.0 - Estrutura", True, "Todos os campos esperados presentes")
+            
+            # Mostra dados da análise
+            prob_casa = analise.get("probabilidade_casa", 0)
+            prob_empate = analise.get("probabilidade_empate", 0)
+            prob_fora = analise.get("probabilidade_fora", 0)
+            
+            print(f"    📊 PROBABILIDADES:")
+            print(f"    Casa: {prob_casa}% | Empate: {prob_empate}% | Fora: {prob_fora}%")
+            print(f"    Soma: {prob_casa + prob_empate + prob_fora}%")
+            print(f"    🎯 Resultado previsto: {analise.get('resultado_previsto')}")
+            print(f"    🔒 Confiança: {analise.get('confianca')}")
+            print(f"    📈 Diferença: {analise.get('diferenca_probabilidade')}%")
+            
+            ev_casa = analise.get("ev_casa", 0)
+            ev_empate = analise.get("ev_empate", 0)
+            ev_fora = analise.get("ev_fora", 0)
+            
+            print(f"    💰 EV Casa: {ev_casa:.3f} | EV Empate: {ev_empate:.3f} | EV Fora: {ev_fora:.3f}")
+            
+        except Exception as e:
+            self.log_test("Análise v2.0 - Endpoint", False, f"Exceção: {str(e)}")
+    
+    def test_v2_probability_validations(self, match_id: str):
+        """4. Validações importantes conforme review"""
+        print(f"\n=== 4. VALIDAÇÕES CRÍTICAS V2.0 ===")
+        
+        try:
+            response = requests.get(f"{self.base_url}/partidas/{match_id}/analise-v2")
+            
+            if response.status_code != 200:
+                self.log_test("Validações v2.0", False, f"Erro ao buscar análise: {response.status_code}")
+                return
+            
+            data = response.json()
+            analise = data.get("analise_1x2", {})
+            
+            # VALIDAÇÃO 1: Probabilidades devem somar exatamente 100%
+            prob_casa = analise.get("probabilidade_casa", 0)
+            prob_empate = analise.get("probabilidade_empate", 0)
+            prob_fora = analise.get("probabilidade_fora", 0)
+            soma_prob = prob_casa + prob_empate + prob_fora
+            
+            if abs(soma_prob - 100) <= 0.01:  # Tolerância mínima para arredondamento
+                self.log_test("✅ Probabilidades somam 100%", True, f"Soma: {soma_prob}%")
+            else:
+                self.log_test("❌ Probabilidades somam 100%", False, f"Soma: {soma_prob}% (Casa: {prob_casa}%, Empate: {prob_empate}%, Fora: {prob_fora}%)")
+            
+            # VALIDAÇÃO 2: EV deve estar em formato decimal
+            ev_casa = analise.get("ev_casa", 0)
+            ev_empate = analise.get("ev_empate", 0)
+            ev_fora = analise.get("ev_fora", 0)
+            
+            if all(isinstance(ev, (int, float)) for ev in [ev_casa, ev_empate, ev_fora]):
+                self.log_test("✅ EV em formato decimal", True, f"EV Casa: {ev_casa}, Empate: {ev_empate}, Fora: {ev_fora}")
+            else:
+                self.log_test("❌ EV em formato decimal", False, f"EVs inválidos: {ev_casa}, {ev_empate}, {ev_fora}")
+            
+            # VALIDAÇÃO 3: Confiança deve ser válida
+            confianca = analise.get("confianca", "")
+            confiancas_validas = ["Alta", "Média", "Baixa", "Sem recomendação segura"]
+            
+            if confianca in confiancas_validas:
+                self.log_test("✅ Confiança válida", True, f"Confiança: {confianca}")
+            else:
+                self.log_test("❌ Confiança válida", False, f"Confiança inválida: {confianca}")
+            
+            # VALIDAÇÃO 4: Observações contextuais devem incluir notícias com impacto
+            observacoes = analise.get("observacoes_contextuais", [])
+            
+            # Verifica se há observações sobre as notícias
+            noticias_encontradas = False
+            for obs in observacoes:
+                if isinstance(obs, dict):
+                    texto = obs.get("texto", "")
+                    if "Flamengo com elenco completo" in texto or "Palmeiras desfalcado" in texto:
+                        noticias_encontradas = True
+                        break
+            
+            if noticias_encontradas:
+                self.log_test("✅ Observações incluem notícias", True, f"Encontradas {len(observacoes)} observações")
+            else:
+                self.log_test("❌ Observações incluem notícias", False, f"Notícias não encontradas nas {len(observacoes)} observações")
+            
+            # VALIDAÇÃO 5: Justificativa deve estar presente
+            justificativa = analise.get("justificativa", "")
+            
+            if len(justificativa) > 50:
+                self.log_test("✅ Justificativa presente", True, f"Justificativa com {len(justificativa)} caracteres")
+            else:
+                self.log_test("❌ Justificativa presente", False, f"Justificativa muito curta: {len(justificativa)} caracteres")
+            
+            # VALIDAÇÃO 6: Detalhes ponderados devem ter 7 fatores
+            detalhes_casa = analise.get("detalhes_casa_ponderados", {})
+            detalhes_fora = analise.get("detalhes_fora_ponderados", {})
+            
+            fatores_esperados = [
+                "forma_recente", "forca_elenco", "desempenho_casa_fora", 
+                "historico_h2h", "motivacao_contexto", "notas_analista", "contexto_externo"
+            ]
+            
+            fatores_casa_ok = all(fator in detalhes_casa for fator in fatores_esperados)
+            fatores_fora_ok = all(fator in detalhes_fora for fator in fatores_esperados)
+            
+            if fatores_casa_ok and fatores_fora_ok:
+                self.log_test("✅ 7 fatores ponderados", True, "Todos os 7 fatores presentes para ambos os times")
+            else:
+                missing_casa = [f for f in fatores_esperados if f not in detalhes_casa]
+                missing_fora = [f for f in fatores_esperados if f not in detalhes_fora]
+                self.log_test("❌ 7 fatores ponderados", False, f"Faltam - Casa: {missing_casa}, Fora: {missing_fora}")
+            
+            # VALIDAÇÃO 7: Scores brutos devem estar presentes
+            scores_brutos = analise.get("scores_brutos", {})
+            
+            if all(key in scores_brutos for key in ["casa", "empate", "fora"]):
+                self.log_test("✅ Scores brutos", True, f"Casa: {scores_brutos.get('casa')}, Empate: {scores_brutos.get('empate')}, Fora: {scores_brutos.get('fora')}")
+            else:
+                self.log_test("❌ Scores brutos", False, f"Scores incompletos: {scores_brutos}")
+            
+        except Exception as e:
+            self.log_test("Validações v2.0", False, f"Exceção: {str(e)}")
+
 def main():
     """Função principal"""
     tester = BackendTester()
     
-    # Executa apenas os testes específicos solicitados
-    tester.run_specific_tests()
+    # Executa o teste completo do AnaliseBet v2.0
+    tester.test_analisebet_v2_complete()
+    
+    # Relatório final
+    tester.print_final_report()
     
     # Verifica se todos os testes passaram
     failed_tests = sum(1 for result in tester.test_results if not result["success"])
