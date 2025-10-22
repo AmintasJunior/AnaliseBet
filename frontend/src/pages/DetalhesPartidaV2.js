@@ -167,33 +167,6 @@ const DetalhesPartidaV2 = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
-          {/* Cabeçalho Informativo da Partida */}
-          {(partida.data_hora || partida.local_estadio) && (
-            <Card className="bg-white border-gray-200">
-              <CardContent className="pt-6">
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
-                  {partida.data_hora && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">📅 Data/Hora:</span>
-                      <span>{formatarDataHora(partida.data_hora)}</span>
-                    </div>
-                  )}
-                  {partida.local_estadio && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">🏟️ Local:</span>
-                      <span>{partida.local_estadio}</span>
-                    </div>
-                  )}
-                  {partida.arbitro && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">👨‍⚖️ Árbitro:</span>
-                      <span>{partida.arbitro}</span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
           {/* Probabilidades Normalizadas - Card Principal */}
           <Card className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 border-2 border-emerald-300 shadow-xl">
             <CardHeader className="border-b-2 border-emerald-100">
