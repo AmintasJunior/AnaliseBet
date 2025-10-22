@@ -104,6 +104,7 @@ const NovaPartidaV2 = () => {
     setLoading(true);
 
     try {
+      // Preparar payload com tratamento correto de campos opcionais
       const payload = {
         ...formData,
         rodada: parseInt(formData.rodada),
@@ -114,7 +115,22 @@ const NovaPartidaV2 = () => {
         media_cartoes_arbitro: parseFloat(formData.media_cartoes_arbitro),
         odd_casa: parseFloat(formData.odd_casa),
         odd_empate: parseFloat(formData.odd_empate),
-        odd_fora: parseFloat(formData.odd_fora)
+        odd_fora: parseFloat(formData.odd_fora),
+        // Converter observacoes_contextuais de string para array ou null
+        observacoes_contextuais: formData.observacoes_contextuais && formData.observacoes_contextuais.trim() 
+          ? formData.observacoes_contextuais.split('\n').filter(obs => obs.trim())
+          : null,
+        // Garantir que campos vazios sejam null ao invés de string vazia
+        data_hora: formData.data_hora || null,
+        local_estadio: formData.local_estadio || null,
+        desempenho_especifico_casa: formData.desempenho_especifico_casa || null,
+        lesoes_suspensoes_casa: formData.lesoes_suspensoes_casa || null,
+        desempenho_especifico_fora: formData.desempenho_especifico_fora || null,
+        lesoes_suspensoes_fora: formData.lesoes_suspensoes_fora || null,
+        noticia_1: formData.noticia_1 || null,
+        noticia_2: formData.noticia_2 || null,
+        noticia_3: formData.noticia_3 || null,
+        observacoes_adicionais: formData.observacoes_adicionais || null
       };
 
       const response = await axios.post(`${API}/partidas`, payload);
