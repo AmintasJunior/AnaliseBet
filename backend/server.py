@@ -154,6 +154,11 @@ class Analise(BaseModel):
     detalhes_scores: Dict[str, Any]
 
 
+class ObservacaoContextual(BaseModel):
+    """Observação contextual com impacto numérico"""
+    texto: str
+    impacto: int  # -10 a +10
+
 class Analise1X2(BaseModel):
     """Modelo para análise 1X2 com probabilidades normalizadas (Versão 2.0)"""
     probabilidade_casa: float
@@ -165,12 +170,15 @@ class Analise1X2(BaseModel):
     justificativa: str
     detalhes_casa: Dict[str, float]
     detalhes_fora: Dict[str, float]
+    detalhes_casa_ponderados: Dict[str, Dict[str, float]]  # {fator: {nota, peso, ponderado}}
+    detalhes_fora_ponderados: Dict[str, Dict[str, float]]  # {fator: {nota, peso, ponderado}}
     scores_brutos: Dict[str, float]
     # Análise de valor (EV) para cada mercado
     ev_casa: float
     ev_empate: float
     ev_fora: float
-    melhor_aposta: str
+    # Observações contextuais
+    observacoes_contextuais: List[ObservacaoContextual]
 
 
 class AnaliseCompleta(BaseModel):
