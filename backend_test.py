@@ -37,39 +37,39 @@ class BackendTester:
         })
         
     def test_create_match_complete(self) -> str:
-        """Testa criação de partida com todos os campos novos"""
-        print("\n=== TESTE 1: POST /api/partidas - Criar partida completa ===")
+        """Testa criação de partida com dados EXATOS fornecidos pelo usuário"""
+        print("\n=== TESTE 1: POST /api/partidas - Criar partida com dados específicos ===")
         
+        # Dados EXATOS fornecidos pelo usuário
         payload = {
             "campeonato": "Liga dos Campeões",
             "rodada": 3,
-            "data_hora": "2024-10-22T16:00:00",
-            "local_estadio": "BayArena",
-            "time_casa": "Leverkusen",
-            "forma_casa": "V-V-E-V-D",
-            "media_gols_marcados_casa": 2.5,
-            "media_gols_sofridos_casa": 1.0,
-            "desempenho_especifico_casa": "Forte em casa com 80% aproveitamento",
+            "data_hora": "2025-07-21T16:00:00",
+            "local_estadio": "Maracanã",
+            "time_casa": "Flamengo",
+            "forma_casa": "V-V-E-V-V",
+            "media_gols_marcados_casa": 2.1,
+            "media_gols_sofridos_casa": 0.8,
+            "desempenho_especifico_casa": "Forte em casa com 85% aproveitamento",
             "lesoes_suspensoes_casa": "Nenhuma",
             "artilheiro_disponivel_casa": True,
-            "time_visitante": "PSG",
-            "forma_fora": "V-D-V-V-E",
-            "media_gols_marcados_fora": 2.8,
-            "media_gols_sofridos_fora": 1.2,
-            "desempenho_especifico_fora": "Bom fora de casa",
-            "lesoes_suspensoes_fora": "2 desfalques importantes",
+            "time_visitante": "Fortaleza",
+            "forma_fora": "D-E-D-V-E",
+            "media_gols_marcados_fora": 1.2,
+            "media_gols_sofridos_fora": 1.8,
+            "desempenho_especifico_fora": "Fraco fora de casa",
+            "lesoes_suspensoes_fora": "2 titulares lesionados",
             "artilheiro_disponivel_fora": False,
-            "historico_h2h": "3V 2E 1D nos últimos 6 jogos",
-            "arbitro": "Michael Oliver",
+            "historico_h2h": "4V 1E 1D nos últimos 6",
+            "arbitro": "Anderson Daronco",
             "media_cartoes_arbitro": 4.5,
-            "condicoes_externas": "Boas condições",
-            "noticia_1": "Leverkusen confiante após sequência positiva",
-            "noticia_2": "PSG com desfalques no ataque",
-            "noticia_3": "Decisivo para classificação",
-            "observacoes_adicionais": "Jogo importante para ambos",
-            "odd_casa": 2.10,
+            "condicoes_externas": "Clima bom, gramado em perfeitas condições",
+            "noticia_1": "Flamengo invicto em casa há 10 jogos",
+            "noticia_2": "Fortaleza com desfalques importantes",
+            "noticia_3": "Partida decisiva para liderança",
+            "odd_casa": 1.85,
             "odd_empate": 3.50,
-            "odd_fora": 3.20
+            "odd_fora": 4.20
         }
         
         try:
