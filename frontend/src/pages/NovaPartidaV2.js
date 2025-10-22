@@ -120,9 +120,9 @@ const NovaPartidaV2 = () => {
         odd_casa: parseFloat(formData.odd_casa),
         odd_empate: parseFloat(formData.odd_empate),
         odd_fora: parseFloat(formData.odd_fora),
-        // Converter observacoes_contextuais de string para array ou null
-        observacoes_contextuais: formData.observacoes_contextuais && formData.observacoes_contextuais.trim() 
-          ? formData.observacoes_contextuais.split('\n').filter(obs => obs.trim())
+        // Observações contextuais manuais (array de objetos com texto e impacto)
+        observacoes_contextuais: formData.observacoes_contextuais && formData.observacoes_contextuais.length > 0
+          ? formData.observacoes_contextuais
           : null,
         // Garantir que campos vazios sejam null ao invés de string vazia
         data_hora: formData.data_hora || null,
@@ -132,8 +132,11 @@ const NovaPartidaV2 = () => {
         desempenho_especifico_fora: formData.desempenho_especifico_fora || null,
         lesoes_suspensoes_fora: formData.lesoes_suspensoes_fora || null,
         noticia_1: formData.noticia_1 || null,
+        noticia_1_impacto: formData.noticia_1 && formData.noticia_1.trim() ? parseInt(formData.noticia_1_impacto) : 0,
         noticia_2: formData.noticia_2 || null,
+        noticia_2_impacto: formData.noticia_2 && formData.noticia_2.trim() ? parseInt(formData.noticia_2_impacto) : 0,
         noticia_3: formData.noticia_3 || null,
+        noticia_3_impacto: formData.noticia_3 && formData.noticia_3.trim() ? parseInt(formData.noticia_3_impacto) : 0,
         observacoes_adicionais: formData.observacoes_adicionais || null
       };
 
