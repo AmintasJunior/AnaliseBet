@@ -361,8 +361,18 @@ def calcular_scores_independentes(partida: Partida) -> Dict[str, Any]:
     score_h2h_casa = calcular_score_h2h(partida.historico_h2h, "casa")
     score_h2h_fora = 10 - score_h2h_casa
     
-    # 5. Motivação/contexto (10%)
-    score_motivacao = calcular_score_motivacao(partida.noticias_relevantes)
+    # 5. Motivação/contexto (10%) - combinar notícias
+    noticias_combinadas = ""
+    if partida.noticia_1:
+        noticias_combinadas += partida.noticia_1 + " "
+    if partida.noticia_2:
+        noticias_combinadas += partida.noticia_2 + " "
+    if partida.noticia_3:
+        noticias_combinadas += partida.noticia_3 + " "
+    if partida.noticias_relevantes:
+        noticias_combinadas += partida.noticias_relevantes
+    
+    score_motivacao = calcular_score_motivacao(noticias_combinadas.strip())
     
     # 6. Notas do analista (10%) - baseado em múltiplos fatores
     score_arbitro = calcular_score_arbitro(partida.media_cartoes_arbitro)
