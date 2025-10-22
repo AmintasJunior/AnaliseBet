@@ -673,7 +673,7 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     
     # Cabeçalho da justificativa
     if confianca == "Sem recomendação segura":
-        justificativa = f"**⚠️ SEM RECOMENDAÇÃO SEGURA**\n"
+        justificativa = "**⚠️ SEM RECOMENDAÇÃO SEGURA**\n"
         justificativa += f"Diferença de apenas {analise_data['diferenca_probabilidade']:.2f}% entre os resultados.\n\n"
         justificativa += f"Probabilidades: {prob_casa}% Casa | {prob_empate}% Empate | {prob_fora}% Fora\n\n"
         justificativa += "**Análise:** Os times estão extremamente equilibrados. Não há vantagem clara para nenhum dos lados.\n"
