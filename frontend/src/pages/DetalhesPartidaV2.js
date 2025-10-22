@@ -151,19 +151,13 @@ const DetalhesPartidaV2 = () => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="text-emerald-700 border-emerald-300">
-                  {partida.campeonato}
-                </Badge>
-                <Badge variant="outline" className="text-gray-700">
-                  Rodada {partida.rodada}
-                </Badge>
-                <Badge variant="outline" className="text-purple-700 border-purple-300">
-                  Análise v2.0
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="outline" className="text-purple-700 border-purple-300 font-semibold">
+                  ⚡ Análise 2.0
                 </Badge>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                {partida.time_casa} <span className="text-gray-400">vs</span> {partida.time_visitante}
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                {gerarCabecalhoPartida()}
               </h1>
             </div>
           </div>
