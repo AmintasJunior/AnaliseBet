@@ -800,9 +800,14 @@ class BackendTester:
 def main():
     """Função principal"""
     tester = BackendTester()
-    success = tester.run_all_tests()
     
-    if success:
+    # Executa apenas os testes específicos solicitados
+    tester.run_specific_tests()
+    
+    # Verifica se todos os testes passaram
+    failed_tests = sum(1 for result in tester.test_results if not result["success"])
+    
+    if failed_tests == 0:
         print("🎉 TODOS OS TESTES PASSARAM!")
         sys.exit(0)
     else:
