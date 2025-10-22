@@ -60,14 +60,17 @@ class PartidaCreate(BaseModel):
     media_cartoes_arbitro: float
     condicoes_externas: str
     
-    # Notícias (3 campos separados)
+    # Notícias (3 campos separados com impacto)
     noticia_1: Optional[str] = None
+    noticia_1_impacto: Optional[int] = 0  # 0-10
     noticia_2: Optional[str] = None
+    noticia_2_impacto: Optional[int] = 0  # 0-10
     noticia_3: Optional[str] = None
+    noticia_3_impacto: Optional[int] = 0  # 0-10
     observacoes_adicionais: Optional[str] = None
     
-    # Observações Contextuais (lista de observações manuais)
-    observacoes_contextuais: Optional[List[str]] = None
+    # Observações Contextuais (lista de observações manuais com impacto)
+    observacoes_contextuais: Optional[List[Dict[str, Any]]] = None  # [{"texto": str, "impacto": int}]
     
     # Odds
     odd_casa: float
