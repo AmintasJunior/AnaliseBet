@@ -385,41 +385,170 @@ const NovaPartidaV2 = () => {
                   {/* Notícias */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                      Notícias e Observações
+                      🗞️ Notícias e Observações
                     </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="noticia_1">Notícia 1</Label>
+                    <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200 mb-4">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Impacto:</strong> Define o peso da notícia na análise (0 a 10). 
+                        Exemplo: "Lesão de reserva" = 1, "Artilheiro confirmado" = 9
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      {/* Notícia 1 */}
+                      <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
+                        <Label htmlFor="noticia_1" className="font-semibold text-gray-700">Notícia 1</Label>
                         <Textarea
                           id="noticia_1"
                           placeholder="Primeira notícia relevante sobre a partida"
                           value={formData.noticia_1}
                           onChange={(e) => handleChange("noticia_1", e.target.value)}
                           rows={2}
+                          className="mt-2"
                         />
+                        <div className="mt-3">
+                          <Label htmlFor="noticia_1_impacto" className="text-sm text-gray-600">
+                            Impacto da Notícia 1 (0-10)
+                          </Label>
+                          <Input
+                            id="noticia_1_impacto"
+                            type="number"
+                            min="0"
+                            max="10"
+                            placeholder="0"
+                            value={formData.noticia_1_impacto}
+                            onChange={(e) => handleChange("noticia_1_impacto", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Label htmlFor="noticia_2">Notícia 2</Label>
+
+                      {/* Notícia 2 */}
+                      <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
+                        <Label htmlFor="noticia_2" className="font-semibold text-gray-700">Notícia 2</Label>
                         <Textarea
                           id="noticia_2"
                           placeholder="Segunda notícia relevante sobre a partida"
                           value={formData.noticia_2}
                           onChange={(e) => handleChange("noticia_2", e.target.value)}
                           rows={2}
+                          className="mt-2"
                         />
+                        <div className="mt-3">
+                          <Label htmlFor="noticia_2_impacto" className="text-sm text-gray-600">
+                            Impacto da Notícia 2 (0-10)
+                          </Label>
+                          <Input
+                            id="noticia_2_impacto"
+                            type="number"
+                            min="0"
+                            max="10"
+                            placeholder="0"
+                            value={formData.noticia_2_impacto}
+                            onChange={(e) => handleChange("noticia_2_impacto", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Label htmlFor="noticia_3">Notícia 3</Label>
+
+                      {/* Notícia 3 */}
+                      <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
+                        <Label htmlFor="noticia_3" className="font-semibold text-gray-700">Notícia 3</Label>
                         <Textarea
                           id="noticia_3"
                           placeholder="Terceira notícia relevante sobre a partida"
                           value={formData.noticia_3}
                           onChange={(e) => handleChange("noticia_3", e.target.value)}
                           rows={2}
+                          className="mt-2"
                         />
+                        <div className="mt-3">
+                          <Label htmlFor="noticia_3_impacto" className="text-sm text-gray-600">
+                            Impacto da Notícia 3 (0-10)
+                          </Label>
+                          <Input
+                            id="noticia_3_impacto"
+                            type="number"
+                            min="0"
+                            max="10"
+                            placeholder="0"
+                            value={formData.noticia_3_impacto}
+                            onChange={(e) => handleChange("noticia_3_impacto", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Label htmlFor="observacoes_adicionais">Observações Adicionais</Label>
+
+                      {/* Observações Contextuais Manuais */}
+                      <div className="border-t-2 border-gray-300 pt-4 mt-6">
+                        <h4 className="text-md font-semibold text-gray-800 mb-3">
+                          ℹ️ Observações Contextuais Manuais
+                        </h4>
+                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mb-3">
+                          <p className="text-sm text-blue-800">
+                            Adicione observações específicas com impacto numérico. Essas observações serão somadas às automáticas.
+                          </p>
+                        </div>
+                        
+                        {/* Lista de observações */}
+                        {formData.observacoes_contextuais.length > 0 && (
+                          <div className="space-y-2 mb-4">
+                            {formData.observacoes_contextuais.map((obs, index) => (
+                              <div key={index} className="flex items-center gap-2 bg-white p-3 rounded border border-gray-200">
+                                <div className="flex-1">
+                                  <p className="text-sm text-gray-700">{obs.texto}</p>
+                                  <span className="text-xs text-gray-500">Impacto: {obs.impacto}</span>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => removerObservacao(index)}
+                                >
+                                  Remover
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Adicionar nova observação */}
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor="obs_texto">Texto da Observação</Label>
+                            <Textarea
+                              id="obs_texto"
+                              placeholder="Ex: Time visitante com desfalques importantes"
+                              value={observacaoManual.texto}
+                              onChange={(e) => setObservacaoManual(prev => ({ ...prev, texto: e.target.value }))}
+                              rows={2}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="obs_impacto">Impacto (0-10)</Label>
+                            <Input
+                              id="obs_impacto"
+                              type="number"
+                              min="0"
+                              max="10"
+                              placeholder="0"
+                              value={observacaoManual.impacto}
+                              onChange={(e) => setObservacaoManual(prev => ({ ...prev, impacto: parseInt(e.target.value) || 0 }))}
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={adicionarObservacao}
+                            className="w-full"
+                          >
+                            Adicionar Observação
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Observações Adicionais */}
+                      <div className="mt-6">
+                        <Label htmlFor="observacoes_adicionais">Observações Adicionais (Gerais)</Label>
                         <Textarea
                           id="observacoes_adicionais"
                           placeholder="Qualquer informação adicional relevante"
