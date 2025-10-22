@@ -64,6 +64,27 @@ const NovaPartidaV2 = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const adicionarObservacao = () => {
+    if (observacaoManual.texto.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        observacoes_contextuais: [...prev.observacoes_contextuais, { ...observacaoManual }]
+      }));
+      setObservacaoManual({ texto: "", impacto: 0 });
+      toast.success("Observação adicionada!");
+    } else {
+      toast.error("Digite o texto da observação");
+    }
+  };
+
+  const removerObservacao = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      observacoes_contextuais: prev.observacoes_contextuais.filter((_, i) => i !== index)
+    }));
+    toast.success("Observação removida!");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
