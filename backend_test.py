@@ -2,6 +2,12 @@
 """
 Teste Completo do Backend - AnaliseBet 2.0
 Sistema de análise de apostas esportivas com probabilidades normalizadas
+
+TESTES SOLICITADOS:
+1. POST /api/partidas - Criar partida com dados específicos
+2. GET /api/partidas/{id}/analise-v2 - Validar análise v2.0
+3. GET /api/partidas - Listar partidas
+4. Confirmar que endpoint antigo /api/partidas/{id}/analise retorna 404
 """
 
 import requests
