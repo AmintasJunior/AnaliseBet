@@ -18,6 +18,7 @@ const NovaPartidaV2 = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("geral");
+  const [observacaoManual, setObservacaoManual] = useState({ texto: "", impacto: 0 });
   const [formData, setFormData] = useState({
     // Geral
     campeonato: "",
