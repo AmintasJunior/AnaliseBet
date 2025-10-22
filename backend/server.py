@@ -684,17 +684,14 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
         detalhes = analise_data["detalhes_casa"]
         detalhes_oponente = analise_data["detalhes_fora"]
         time_nome = partida.time_casa
-        time_oponente = partida.time_visitante
     elif resultado == "Fora":
         detalhes = analise_data["detalhes_fora"]
         detalhes_oponente = analise_data["detalhes_casa"]
         time_nome = partida.time_visitante
-        time_oponente = partida.time_casa
     else:
         detalhes = analise_data["detalhes_casa"]
         detalhes_oponente = analise_data["detalhes_fora"]
         time_nome = None
-        time_oponente = None
     
     # Cabeçalho da justificativa
     if time_nome:
