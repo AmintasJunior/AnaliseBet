@@ -904,7 +904,7 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
         
         # Verifica histórico
         if "empate" in partida.historico_h2h.lower() or "e" in partida.historico_h2h.upper():
-            justificativa += f"O histórico de confrontos diretos reforça a tendência de igualdade. "
+            justificativa += "O histórico de confrontos diretos reforça a tendência de igualdade. "
         
         # Confiança
         if confianca == "Baixa":
@@ -920,9 +920,9 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
     # Analisa forma recente
     if detalhes["forma_recente"] >= 7:
         vitorias = partida.forma_casa.upper().count('V') if resultado == "Casa" else partida.forma_fora.upper().count('V')
-        justificativa += f"excelente momento com forma recente superior"
+        justificativa += "excelente momento com forma recente superior"
         if vitorias >= 3:
-            justificativa += f" (sequência invicta)"
+            justificativa += " (sequência invicta)"
         justificativa += ", "
     elif detalhes["forma_recente"] >= 5:
         justificativa += "forma recente estável, "
@@ -959,7 +959,7 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
             justificativa += "mas mantém desempenho razoável. "
     else:
         justificativa += f"O {time_oponente} também apresenta bom desempenho, "
-        justificativa += f"o que reduz a margem de vantagem do favorito. "
+        justificativa += "o que reduz a margem de vantagem do favorito. "
     
     # Adiciona contexto de confiança
     if confianca == "Alta":
