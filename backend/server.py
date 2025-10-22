@@ -66,6 +66,9 @@ class PartidaCreate(BaseModel):
     noticia_3: Optional[str] = None
     observacoes_adicionais: Optional[str] = None
     
+    # Observações Contextuais (lista de observações manuais)
+    observacoes_contextuais: Optional[List[str]] = None
+    
     # Odds
     odd_casa: float
     odd_empate: float
