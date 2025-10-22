@@ -34,6 +34,9 @@ const DetalhesPartidaV2 = () => {
   };
 
   const getConfiancaCor = (confianca) => {
+    if (confianca === "Sem recomendação segura") {
+      return "bg-red-100 text-red-800 border-red-300";
+    }
     switch (confianca) {
       case "Alta":
         return "bg-emerald-100 text-emerald-800 border-emerald-300";
@@ -43,6 +46,30 @@ const DetalhesPartidaV2 = () => {
         return "bg-orange-100 text-orange-800 border-orange-300";
       default:
         return "bg-gray-100 text-gray-800 border-gray-300";
+    }
+  };
+
+  const getConfiancaPercentual = (confianca) => {
+    if (confianca === "Sem recomendação segura") return 0;
+    if (confianca === "Baixa") return 35;
+    if (confianca === "Média") return 65;
+    if (confianca === "Alta") return 90;
+    return 50;
+  };
+
+  const formatarDataHora = (dataHora) => {
+    if (!dataHora) return null;
+    try {
+      const date = new Date(dataHora);
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dataHora;
     }
   };
 
