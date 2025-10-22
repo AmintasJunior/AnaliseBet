@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Teste Completo do Backend - AnaliseBet 2.0
-Sistema de análise de apostas esportivas com probabilidades normalizadas
+Teste Específico do Endpoint POST /api/partidas
+Testes solicitados pelo usuário:
 
-TESTES SOLICITADOS:
-1. POST /api/partidas - Criar partida com dados específicos
-2. GET /api/partidas/{id}/analise-v2 - Validar análise v2.0
-3. GET /api/partidas - Listar partidas
-4. Confirmar que endpoint antigo /api/partidas/{id}/analise retorna 404
+1. Teste básico de cadastro - Cadastrar uma partida com todos os campos obrigatórios preenchidos
+2. Teste com campos opcionais vazios - Verificar se campos como noticia_1, noticia_2, observacoes_contextuais null/vazios são aceitos
+3. Teste com observacoes_contextuais como array - Enviar observacoes_contextuais como array de strings
+4. Teste de validação - Tentar cadastrar sem campos obrigatórios e verificar erro apropriado
+5. Verificar response - Confirmar que a partida foi criada e retorna todos os campos corretamente
 """
 
 import requests
