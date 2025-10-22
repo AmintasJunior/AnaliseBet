@@ -134,20 +134,12 @@ const Dashboard = () => {
 
                   <div className="mt-6 flex gap-2">
                     <Button
-                      onClick={() => navigate(`/partida-v2/${partida.id}`)}
-                      className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                      data-testid={`ver-analise-v2-btn-${partida.id}`}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      Análise v2.0
-                    </Button>
-                    <Button
                       onClick={() => navigate(`/partida/${partida.id}`)}
-                      variant="outline"
-                      className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                      className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                       data-testid={`ver-analise-btn-${partida.id}`}
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="mr-2 h-4 w-4" />
+                      Ver Análise
                     </Button>
                     <Button
                       onClick={(e) => deletarPartida(partida.id, e)}
