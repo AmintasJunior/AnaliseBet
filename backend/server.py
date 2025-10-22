@@ -970,39 +970,6 @@ def gerar_justificativa_1x2(partida: Partida, analise_data: Dict) -> str:
         justificativa += f"Apesar da leve vantagem estatística, a diferença de apenas {diferenca:.2f}% indica baixa confiança no resultado."
     
     return justificativa
-    
-    if resultado == "Casa":
-        if detalhes["forma_recente"] >= 7:
-            justificativa += f"✓ {partida.time_casa} em excelente forma recente ({partida.forma_casa})\n"
-        if detalhes["desempenho_casa_fora"] >= 7:
-            justificativa += f"✓ Forte desempenho jogando em casa (média {partida.media_gols_marcados_casa:.1f} gols)\n"
-        if partida.desempenho_especifico_casa:
-            justificativa += f"✓ Desempenho em casa: {partida.desempenho_especifico_casa}\n"
-    elif resultado == "Fora":
-        if detalhes["forma_recente"] >= 7:
-            justificativa += f"✓ {partida.time_visitante} em excelente forma recente ({partida.forma_fora})\n"
-        if detalhes["desempenho_casa_fora"] >= 7:
-            justificativa += f"✓ Forte desempenho jogando fora (média {partida.media_gols_marcados_fora:.1f} gols)\n"
-        if partida.desempenho_especifico_fora:
-            justificativa += f"✓ Desempenho fora: {partida.desempenho_especifico_fora}\n"
-    else:
-        justificativa += "✓ Times equilibrados em múltiplos fatores\n"
-        justificativa += f"✓ Histórico sugere equilíbrio: {partida.historico_h2h}\n"
-    
-    # Adiciona alertas de lesões (Casa)
-    lesoes_casa = partida.lesoes_suspensoes_casa if partida.lesoes_suspensoes_casa else partida.lesoes_suspensoes
-    if lesoes_casa and lesoes_casa.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
-        justificativa += f"⚠ {partida.time_casa} - Desfalques: {lesoes_casa}\n"
-    
-    # Adiciona alertas de lesões (Fora)
-    lesoes_fora = partida.lesoes_suspensoes_fora if partida.lesoes_suspensoes_fora else ""
-    if lesoes_fora and lesoes_fora.lower() not in ["nenhuma", "sem desfalques", "-", ""]:
-        justificativa += f"⚠ {partida.time_visitante} - Desfalques: {lesoes_fora}\n"
-    
-    # Adiciona notícias
-    noticias = []
-    if partida.noticia_1:
-        noticias.append(partida.noticia_1)
     if partida.noticia_2:
         noticias.append(partida.noticia_2)
     if partida.noticia_3:
